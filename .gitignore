@@ -1,0 +1,10 @@
+# Root folder
+*.*
+!.gitignore
+!.gitmodules
+!Generate.lua
+
+# Editor project
+!Editor/Editor.lua
+!Editor/Resources/**
+!Editor/Source/**
