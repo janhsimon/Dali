@@ -35,34 +35,8 @@ Editor::Editor(QWidget* parent) :
   rootWidget->setLayout(rootLayout);
   setCentralWidget(rootWidget);
 
-  const auto menuBar = new QMenuBar();
-
-  const auto fileMenu = menuBar->addMenu("File");
-  fileMenu->addAction("New Project...");
-  fileMenu->addAction("Open Project...");
-  const auto openRecentMenu = fileMenu->addMenu("Open Recent Projects");
-  openRecentMenu->addAction("PlatformerMockup.dlp");
-  openRecentMenu->addAction("DemoProject.dlp");
-  fileMenu->addSeparator();
-  fileMenu->addAction("Save Project");
-  fileMenu->addAction("Save Project As...");
-  fileMenu->addSeparator();
-  fileMenu->addAction("Exit");
-  setMenuBar(menuBar);
-
-  const auto editMenu = menuBar->addMenu("Edit");
-
-  const auto viewMenu = menuBar->addMenu("View");
-  const auto zoomInAction = viewMenu->addAction("Zoom In", [&]() { imageArea->getCurrentImage()->zoomIn(); }, Qt::Key::Key_Plus);
-  const auto zoomOutAction = viewMenu->addAction("Zoom Out", [&]() { imageArea->getCurrentImage()->zoomOut(); }, Qt::Key::Key_Minus);
-  viewMenu->addSeparator();
-  const auto showGridAction = viewMenu->addAction("Show Grid", [&](bool enabled) { imageArea->getCurrentImage()->setDrawGrid(enabled); }, Qt::Key::Key_G);
-  showGridAction->setCheckable(true);
-  showGridAction->setChecked(imageArea->getCurrentImage()->getDrawGrid());
-
-  const auto imageMenu = menuBar->addMenu("Image");
-  const auto windowMenu = menuBar->addMenu("Window");
-  const auto helpMenu = menuBar->addMenu("Help");
+  menuBar = std::make_unique<MenuBar>(imageArea.get(), this);
+  setMenuBar(menuBar.get());
 
   const auto previewWindow = new QWidget(this);
   previewWindow->setMinimumSize(320, 200);

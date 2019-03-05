@@ -9,5 +9,9 @@ class ImageArea : public QTabWidget
 public:
   ImageArea(QWidget* parent = nullptr);
 
+  void newImageTab(const QString& title, unsigned int width, unsigned int height);
+  void closeCurrentImageTab();
+  void closeAllImageTabs();
+
   Image* getCurrentImage() const;
 };

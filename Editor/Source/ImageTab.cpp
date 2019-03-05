@@ -1,9 +1,9 @@
 #include "ImageTab.hpp"
 
-ImageTab::ImageTab(QWidget* parent) :
+ImageTab::ImageTab(unsigned int width, unsigned int height, QWidget* parent) :
   QScrollArea(parent)
 {
-  image = std::make_unique<Image>(128, 128, this);
+  image = std::make_unique<Image>(width, height, this);
   setWidget(image.get());
   setAlignment(Qt::AlignCenter);
 }

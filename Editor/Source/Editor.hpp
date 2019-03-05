@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImageArea.hpp"
+#include "MenuBar.hpp"
 
 class Editor : public QMainWindow
 {
@@ -10,5 +10,6 @@ public:
   Editor(QWidget* parent = nullptr);
 
 private:
+  std::unique_ptr<MenuBar> menuBar;
   std::unique_ptr<ImageArea> imageArea;
 };

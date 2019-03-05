@@ -15,8 +15,7 @@ public:
   const bool getDrawGrid() const { return drawGrid; }
   void setDrawGrid(bool drawGrid) { this->drawGrid = drawGrid; repaint(); }
 
-  const PaletteModel* getPaletteModel() const { return paletteModel.get(); }
-  const ImageModel* getImageModel() const { return imageModel.get(); }
+  ImageModel* getImageModel() const { return imageModel.get(); }
 
 protected:
   void mousePressEvent(QMouseEvent* event) override;
@@ -24,12 +23,12 @@ protected:
   void paintEvent(QPaintEvent* event) override;
 
 private:
-  std::unique_ptr<PaletteModel> paletteModel;
   std::unique_ptr<ImageModel> imageModel;
   unsigned int scale;
   float inverseScale; // precalculated for performance
   bool drawGrid;
 
   void setScale(unsigned int scale);
-  bool convertScreenToImage(const QPointF point, int& x, int& y) const;
+
+  QPoint ScreenToImagePoint(const QPointF point) const;
 };

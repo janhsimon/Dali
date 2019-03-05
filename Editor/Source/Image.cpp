@@ -3,11 +3,12 @@
 Image::Image(unsigned int width, unsigned int height, QWidget* parent) :
   QWidget(parent)
 {
-  paletteModel = std::make_unique<PaletteModel>();
-  imageModel = std::make_unique<ImageModel>(width, height, paletteModel.get());
+  imageModel = std::make_unique<ImageModel>(width, height);
   
   setScale(4);
-  drawGrid = true;
+  drawGrid = false;
+
+  connect(imageModel.get(), &ImageModel::paletteChanged, this, [&](int index) { repaint(); });
 }
 
 void Image::mousePressEvent(QMouseEvent *event)
@@ -19,13 +20,14 @@ void Image::mouseMoveEvent(QMouseEvent* event)
 {
   if (event->buttons() & Qt::LeftButton)
   {
-    int mouseX, mouseY;
-    if (!convertScreenToImage(event->localPos(), mouseX, mouseY))
+    const auto mousePosition = ScreenToImagePoint(event->localPos());
+
+    if (mousePosition.x() < 0 || mousePosition.x() >= imageModel->getWidth() || mousePosition.y() < 0 || mousePosition.y() >= imageModel->getHeight())
     {
       return;
     }
 
-    auto rectToRepaint = imageModel->setPixels(mouseX, mouseY);
+    auto rectToRepaint = imageModel->setPixels(mousePosition);
     repaint(QRect(rectToRepaint.x() * scale, rectToRepaint.y() * scale, rectToRepaint.width() * scale, rectToRepaint.height() * scale));
   }
 }
@@ -77,10 +79,7 @@ void Image::setScale(unsigned int scale)
   setFixedSize(imageModel->getWidth() * scale, imageModel->getHeight() * scale);
 }
 
-bool Image::convertScreenToImage(const QPointF point, int& x, int& y) const
+QPoint Image::ScreenToImagePoint(const QPointF point) const
 {
-  x = static_cast<int>(point.x() * inverseScale);
-  y = static_cast<int>(point.y() * inverseScale);
-
-  return x >= 0 && x < imageModel->getWidth() && y >= 0 && y < imageModel->getHeight();
+  return QPoint(point.x() * inverseScale, point.y() * inverseScale);
 }

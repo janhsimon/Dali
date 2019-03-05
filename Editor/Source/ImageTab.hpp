@@ -7,7 +7,7 @@ class ImageTab : public QScrollArea
   Q_OBJECT
 
 public:
-  ImageTab(QWidget* parent = nullptr);
+  ImageTab(unsigned int width, unsigned int height, QWidget* parent = nullptr);
 
   Image* getImage() const { return image.get(); }
 
