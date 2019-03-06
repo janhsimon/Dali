@@ -9,6 +9,8 @@ ImageModel::ImageModel(unsigned int width_, unsigned int height_) :
   {
     paletteColors.push_back(qRgb(std::rand() % 255, std::rand() % 255, std::rand() % 255));
   }
+
+  selectedPaletteColorIndex = 0u;
   
   image = std::make_unique<QImage>(width, height, QImage::Format::Format_Indexed8);
   image->setColorTable(paletteColors);
@@ -26,7 +28,18 @@ void ImageModel::setPaletteColorAtIndex(const unsigned int index, const QRgb col
 
   paletteColors[index] = color;
   image->setColorTable(paletteColors);
-  emit paletteChanged(index);
+  emit paletteChanged();
+}
+
+void ImageModel::setSelectedPaletteColorIndex(const unsigned int selectedPaletteColorIndex)
+{
+  if (selectedPaletteColorIndex >= getPaletteColorCount())
+  {
+    return;
+  }
+
+  this->selectedPaletteColorIndex = selectedPaletteColorIndex;
+  emit selectedPaletteColorIndexChanged();
 }
 
 QRect ImageModel::setPixels(const QPoint point)
@@ -65,7 +78,7 @@ QRect ImageModel::setPixels(const QPoint point)
     {
       if (brush[(brushY + 1) * brushSizeX + brushX + 1] == 1)
       {
-        image->scanLine(point.y() + brushY)[point.x() + brushX] = 1;
+        image->scanLine(point.y() + brushY)[point.x() + brushX] = selectedPaletteColorIndex;
       }
     }
   }

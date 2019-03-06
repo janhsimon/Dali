@@ -1,16 +1,16 @@
 #pragma once
 
-#include "Image.hpp"
+#include "ImageScrollArea.hpp"
 
-class ImageTab : public QScrollArea
+class ImageTab : public QWidget
 {
   Q_OBJECT
 
 public:
   ImageTab(unsigned int width, unsigned int height, QWidget* parent = nullptr);
 
-  Image* getImage() const { return image.get(); }
+  Image* getImage() const { return imageScrollArea->getImage(); }
 
 private:
-  std::unique_ptr<Image> image;
+  std::unique_ptr<ImageScrollArea> imageScrollArea;
 };

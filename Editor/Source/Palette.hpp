@@ -1,13 +1,13 @@
 #pragma once
 
-#include "ImageArea.hpp"
+#include "ImageModel.hpp"
 
 class Palette : public QWidget
 {
   Q_OBJECT
 
 public:
-  Palette(const ImageArea* imageArea, QWidget* parent = nullptr);
+  Palette(ImageModel* imageModel, QWidget* parent = nullptr);
 
 protected:
   void mousePressEvent(QMouseEvent* event) override;
@@ -17,5 +17,5 @@ private:
   constexpr static auto SWATCH_SIZE = 32u;
   constexpr static auto SWATCHES_PER_ROW = 4u;
 
-  const ImageArea* imageArea;
+  ImageModel* imageModel;
 };

@@ -1,16 +1,16 @@
 #pragma once
 
-#include "ImageArea.hpp"
+#include "MainArea.hpp"
 
 class MenuBar : public QMenuBar
 {
   Q_OBJECT
 
 public:
-  MenuBar(ImageArea* imageArea, QWidget* parent = nullptr);
+  MenuBar(MainArea* mainArea, QWidget* parent = nullptr);
 
 private:
-  ImageArea* imageArea;
+  MainArea* mainArea;
 
   QAction* zoomInAction;
   QAction* zoomOutAction;

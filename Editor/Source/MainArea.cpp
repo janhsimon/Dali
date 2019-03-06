@@ -1,17 +1,17 @@
-#include "ImageArea.hpp"
+#include "MainArea.hpp"
 
-ImageArea::ImageArea(QWidget* parent) :
+MainArea::MainArea(QWidget* parent) :
   QTabWidget(parent)
 {
  
 }
 
-void ImageArea::newImageTab(const QString& title, unsigned int width, unsigned int height)
+void MainArea::newImageTab(const QString& title, unsigned int width, unsigned int height)
 {
   setCurrentIndex(addTab(new ImageTab(width, height, this), title));
 }
 
-void ImageArea::closeCurrentImageTab()
+void MainArea::closeCurrentImageTab()
 {
   if (currentIndex() >= 0)
   {
@@ -21,7 +21,7 @@ void ImageArea::closeCurrentImageTab()
   }
 }
 
-void ImageArea::closeAllImageTabs()
+void MainArea::closeAllImageTabs()
 {
   // TODO: check if any tabs have any unsaved changes and
   // ask for permission to continue if there are any
@@ -31,7 +31,7 @@ void ImageArea::closeAllImageTabs()
   }
 }
 
-Image* ImageArea::getCurrentImage() const
+Image* MainArea::getCurrentImage() const
 {
   const auto currentImageTab = static_cast<ImageTab*>(currentWidget());
 

@@ -8,7 +8,7 @@ Image::Image(unsigned int width, unsigned int height, QWidget* parent) :
   setScale(4);
   drawGrid = false;
 
-  connect(imageModel.get(), &ImageModel::paletteChanged, this, [&](int index) { repaint(); });
+  connect(imageModel.get(), &ImageModel::paletteChanged, this, [&]() { repaint(); });
 }
 
 void Image::mousePressEvent(QMouseEvent *event)

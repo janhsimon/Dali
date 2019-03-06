@@ -11,5 +11,5 @@ public:
 
 private:
   std::unique_ptr<MenuBar> menuBar;
-  std::unique_ptr<ImageArea> imageArea;
+  std::unique_ptr<MainArea> mainArea;
 };

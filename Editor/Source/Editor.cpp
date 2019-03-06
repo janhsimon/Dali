@@ -8,34 +8,45 @@ Editor::Editor(QWidget* parent) :
   const auto rootLayout = new QVBoxLayout();
   rootLayout->setContentsMargins(0, 0, 0, 0);
   
-  const auto toolBar = new QWidget(rootWidget);
-  toolBar->setMinimumHeight(48);
-  toolBar->setStyleSheet("background-color: #0808FF");
-  rootLayout->addWidget(toolBar);
-
-  imageArea = std::make_unique<ImageArea>(this);
+  const auto toolSettingsBar = new QWidget(rootWidget);
+  toolSettingsBar->setStyleSheet("background-color: #FF8080");
+  toolSettingsBar->setMinimumHeight(64);
+  const auto toolSettingsBarLayout = new QHBoxLayout();
+  toolSettingsBarLayout->addWidget(new QLabel("Tool-specific settings go here..."));
+  toolSettingsBar->setLayout(toolSettingsBarLayout);
+  rootLayout->addWidget(toolSettingsBar);
 
   const auto mainLayout = new QHBoxLayout();
   mainLayout->setContentsMargins(0, 0, 0, 0);
-  const auto sideBar = new QWidget(rootWidget);
-  sideBar->setStyleSheet("background-color: #FF0808");
-  const auto sideBarLayout = new QVBoxLayout();
-  sideBarLayout->addWidget(new Palette(imageArea.get()));
-  sideBarLayout->addStretch();
-  sideBar->setLayout(sideBarLayout);
-  mainLayout->addWidget(sideBar);
-  mainLayout->addWidget(imageArea.get());
+
+  const auto toolBar = new QWidget(rootWidget);
+  toolBar->setStyleSheet("background-color: #8080FF");
+  const auto toolBarLayout = new QVBoxLayout();
+  toolBarLayout->addWidget(new QPushButton("Pick"));
+  toolBarLayout->addWidget(new QPushButton("Brush"));
+  toolBarLayout->addWidget(new QPushButton("Line"));
+  toolBarLayout->addWidget(new QPushButton("Square"));
+  toolBarLayout->addWidget(new QPushButton("Circle"));
+  toolBarLayout->addWidget(new QPushButton("Fill"));
+  toolBarLayout->addStretch();
+  toolBar->setLayout(toolBarLayout);
+  mainLayout->addWidget(toolBar);
+
+  mainArea = std::make_unique<MainArea>(this);
+  mainLayout->addWidget(mainArea.get());
+
   rootLayout->addLayout(mainLayout);
   
-  const auto statusBar = new QWidget(rootWidget);
+  const auto statusBar = new QStatusBar(this);
+  statusBar->addWidget(new QLabel("This is the status bar."));
   statusBar->setMinimumHeight(24);
-  statusBar->setStyleSheet("background-color: #FEBB08");
-  rootLayout->addWidget(statusBar);
+  statusBar->setStyleSheet("background-color: #0880FF");
+  setStatusBar(statusBar);
 
   rootWidget->setLayout(rootLayout);
   setCentralWidget(rootWidget);
 
-  menuBar = std::make_unique<MenuBar>(imageArea.get(), this);
+  menuBar = std::make_unique<MenuBar>(mainArea.get(), this);
   setMenuBar(menuBar.get());
 
   const auto previewWindow = new QWidget(this);

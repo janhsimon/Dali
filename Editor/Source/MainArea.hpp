@@ -2,12 +2,12 @@
 
 #include "ImageTab.hpp"
 
-class ImageArea : public QTabWidget
+class MainArea : public QTabWidget
 {
   Q_OBJECT
 
 public:
-  ImageArea(QWidget* parent = nullptr);
+  MainArea(QWidget* parent = nullptr);
 
   void newImageTab(const QString& title, unsigned int width, unsigned int height);
   void closeCurrentImageTab();
