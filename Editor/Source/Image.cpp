@@ -27,7 +27,7 @@ void Image::mouseMoveEvent(QMouseEvent* event)
       return;
     }
 
-    auto rectToRepaint = imageModel->setPixels(mousePosition);
+    auto rectToRepaint = imageModel->drawOnSelectedLayer(mousePosition);
     repaint(QRect(rectToRepaint.x() * scale, rectToRepaint.y() * scale, rectToRepaint.width() * scale, rectToRepaint.height() * scale));
   }
 }
@@ -38,23 +38,43 @@ void Image::paintEvent(QPaintEvent* event)
 
   // the rect uses on-screen pixel coordinates, so we need to convert it to image pixel coordinates
   // and since we could be seeing parts of image pixels, we need to include any border image pixels
-  const auto screenRect = event->rect();
+  QRectF screenRect = event->rect();
 
   // divide the screen rect by scale to get image pixel coordinates
-  auto tempRect = QRectF(screenRect);
-  tempRect.setX(tempRect.x() * inverseScale);
-  tempRect.setY(tempRect.y() * inverseScale);
-  tempRect.setWidth(tempRect.width() * inverseScale);
-  tempRect.setHeight(tempRect.height() * inverseScale);
+  screenRect.setX(screenRect.x() * inverseScale);
+  screenRect.setY(screenRect.y() * inverseScale);
+  screenRect.setWidth(screenRect.width() * inverseScale);
+  screenRect.setHeight(screenRect.height() * inverseScale);
 
   // align the rect to include potential border image pixels
-  const auto sourceRect = tempRect.toAlignedRect();
+  const auto sourceRect = screenRect.toAlignedRect();
   const auto targetRect = QRect(sourceRect.x() * scale, sourceRect.y() * scale, sourceRect.width() * scale, sourceRect.height() * scale);
-  painter.drawImage(targetRect, *imageModel->getImage(), sourceRect, Qt::ImageConversionFlag::NoFormatConversion);
+
+  // draw the background
+  {
+    const auto top = static_cast<int>(targetRect.top() * INVERSE_BACKGROUND_BLOCK_SIZE);
+    const auto left = static_cast<int>(targetRect.left() * INVERSE_BACKGROUND_BLOCK_SIZE);
+    const auto bottom = static_cast<int>(targetRect.bottom() * INVERSE_BACKGROUND_BLOCK_SIZE);
+    const auto right = static_cast<int>(targetRect.right() * INVERSE_BACKGROUND_BLOCK_SIZE);
+
+    for (auto y = top; y <= bottom; ++y)
+    {
+      for (auto x = left; x <= right; ++x)
+      {
+        const auto color = (x % 2 != y % 2) ? QColor(100, 100, 100) : QColor(88, 88, 88);
+        painter.fillRect(QRect(x * BACKGROUND_BLOCK_SIZE, y * BACKGROUND_BLOCK_SIZE, BACKGROUND_BLOCK_SIZE, BACKGROUND_BLOCK_SIZE), color);
+      }
+    }
+  }
+
+  for (auto i = 0u; i < imageModel->getLayerCount(); ++i)
+  {
+    painter.drawImage(targetRect, *imageModel->getLayerImage(i), sourceRect, Qt::ImageConversionFlag::NoFormatConversion);
+  }
   
   if (drawGrid && scale >= 4)
   {
-    painter.setPen(QPen(Qt::darkGray, 0));
+    painter.setPen(QPen(Qt::lightGray, 0));
 
     // draw vertical grid lines
     for (auto x = sourceRect.left(); x <= sourceRect.right(); ++x)

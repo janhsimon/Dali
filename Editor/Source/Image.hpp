@@ -23,6 +23,9 @@ protected:
   void paintEvent(QPaintEvent* event) override;
 
 private:
+  static constexpr auto BACKGROUND_BLOCK_SIZE = 24;
+  static constexpr auto INVERSE_BACKGROUND_BLOCK_SIZE = 1.0f / static_cast<float>(BACKGROUND_BLOCK_SIZE);
+
   std::unique_ptr<ImageModel> imageModel;
   unsigned int scale;
   float inverseScale; // precalculated for performance

@@ -1,48 +1,69 @@
 #include "ImageModel.hpp"
 
-ImageModel::ImageModel(unsigned int width_, unsigned int height_) :
-  width(width_),
-  height(height_)
+ImageModel::ImageModel(unsigned int width, unsigned int height) :
+  width(width),
+  height(height)
 {
-  paletteColors.reserve(16);
-  for (auto i = 0u; i < 16; ++i)
+  paletteColors.reserve(1 + 16);
+  paletteColors.push_back(qRgba(0, 0, 0, 0));
+  for (auto i = 0u; i < 16u; ++i)
   {
-    paletteColors.push_back(qRgb(std::rand() % 255, std::rand() % 255, std::rand() % 255));
+    paletteColors.push_back(qRgba(std::rand() % 255, std::rand() % 255, std::rand() % 255, 255));
   }
 
   selectedPaletteColorIndex = 0u;
   
-  image = std::make_unique<QImage>(width, height, QImage::Format::Format_Indexed8);
-  image->setColorTable(paletteColors);
+  addLayer();
+}
 
-  // explicitly set all pixels to avoid crashing
-  memset(image->bits(), 0, image->byteCount());
+QRgb ImageModel::getPaletteColorAtIndex(unsigned int index) const
+{
+  // take into account that we have an internal first palette color
+  return paletteColors[index + 1];
 }
 
 void ImageModel::setPaletteColorAtIndex(const unsigned int index, const QRgb color)
 {
-  if (index >= getPaletteColorCount())
+  // take into account that we have an internal first palette color
+  paletteColors[index + 1] = color;
+
+  for (auto& layer : layers)
   {
-    return;
+    layer->setColorTable(paletteColors);
   }
 
-  paletteColors[index] = color;
-  image->setColorTable(paletteColors);
   emit paletteChanged();
+}
+
+unsigned int ImageModel::getPaletteColorCount() const
+{
+  // take into account that we have an internal first palette color
+  return static_cast<unsigned int>(paletteColors.size()) - 1u;
 }
 
 void ImageModel::setSelectedPaletteColorIndex(const unsigned int selectedPaletteColorIndex)
 {
-  if (selectedPaletteColorIndex >= getPaletteColorCount())
-  {
-    return;
-  }
-
   this->selectedPaletteColorIndex = selectedPaletteColorIndex;
   emit selectedPaletteColorIndexChanged();
 }
 
-QRect ImageModel::setPixels(const QPoint point)
+void ImageModel::addLayer()
+{
+  layers.push_back(std::make_unique<QImage>(width, height, QImage::Format::Format_Indexed8));
+  layers.back()->setColorTable(paletteColors);
+
+  // set all indices to the internal first palette color (fully transparent)
+  memset(layers.back()->bits(), 0, layers.back()->sizeInBytes());
+
+  setSelectedLayerIndex(static_cast<unsigned int>(layers.size()) - 1u);
+}
+
+void ImageModel::removeSelectedLayer()
+{
+
+}
+
+QRect ImageModel::drawOnSelectedLayer(const QPoint point)
 {
   // TODO: this is simulating a brush tool, move this code there later
 
@@ -78,12 +99,16 @@ QRect ImageModel::setPixels(const QPoint point)
     {
       if (brush[(brushY + 1) * brushSizeX + brushX + 1] == 1)
       {
-        image->scanLine(point.y() + brushY)[point.x() + brushX] = selectedPaletteColorIndex;
+        const auto i = point.x() + brushX;
+        const auto j = point.y() + brushY;
+
+        // take into account that we have an internal first palette color
+        layers[selectedLayerIndex]->scanLine(j)[i] = getSelectedPaletteColorIndex() + 1;
       }
     }
   }
 
-  emit pixelsChanged();
+  emit imageChanged();
 
   return QRect(point.x() + brushStartX, point.y() + brushStartY, brushSizeX, brushSizeY);
 }

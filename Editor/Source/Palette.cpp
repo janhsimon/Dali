@@ -1,14 +1,14 @@
 #include "Palette.hpp"
 
-Palette::Palette(ImageModel* imageModel_, QWidget* parent) :
-  imageModel(imageModel_),
+Palette::Palette(ImageModel* imageModel, QWidget* parent) :
+  imageModel(imageModel),
   QWidget(parent)
 {
-    const auto numRows = imageModel->getPaletteColorCount() / SWATCHES_PER_ROW + 1;
-    setFixedSize(SWATCHES_PER_ROW * SWATCH_SIZE + (SWATCHES_PER_ROW - 1) * 2 + 2, numRows * SWATCH_SIZE + (numRows - 1) * 2 + 2);
+  const auto numRows = imageModel->getPaletteColorCount() / SWATCHES_PER_ROW + 1;
+  setFixedSize(SWATCHES_PER_ROW * SWATCH_SIZE + (SWATCHES_PER_ROW - 1) * 2 + 2, numRows * SWATCH_SIZE + (numRows - 1) * 2 + 2);
 
-    connect(imageModel, &ImageModel::paletteChanged, this, [&]() { repaint(); });
-    connect(imageModel, &ImageModel::selectedPaletteColorIndexChanged, this, [&]() { repaint(); });
+  connect(imageModel, &ImageModel::paletteChanged, this, [&]() { repaint(); });
+  connect(imageModel, &ImageModel::selectedPaletteColorIndexChanged, this, [&]() { repaint(); });
 }
 
 void Palette::mousePressEvent(QMouseEvent* event)

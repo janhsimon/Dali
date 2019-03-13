@@ -1,4 +1,5 @@
 #include "ImageTab.hpp"
+#include "Layers.hpp"
 #include "MainArea.hpp"
 #include "Palette.hpp"
 
@@ -11,9 +12,11 @@ ImageTab::ImageTab(unsigned int width, unsigned int height, QWidget* parent) :
 
   const auto sideBar = new QWidget();
   sideBar->setStyleSheet("background-color: #80FF80");
-  sideBar->setMinimumWidth(120);
+  sideBar->setFixedWidth(200);
   const auto sideBarLayout = new QVBoxLayout();
+  sideBarLayout->setContentsMargins(0, 0, 0, 0);
   sideBarLayout->addWidget(new Palette(imageScrollArea->getImage()->getImageModel(), this));
+  sideBarLayout->addWidget(new Layers(imageScrollArea->getImage()->getImageModel(), this));
   sideBarLayout->addStretch();
   sideBar->setLayout(sideBarLayout);
   rootLayout->addWidget(sideBar);
