@@ -9,6 +9,7 @@ Image::Image(unsigned int width, unsigned int height, QWidget* parent) :
   drawGrid = false;
 
   connect(imageModel.get(), &ImageModel::paletteChanged, this, [&]() { repaint(); });
+  connect(imageModel.get(), &ImageModel::layersChanged, this, [&]() { repaint(); });
 }
 
 void Image::mousePressEvent(QMouseEvent *event)
@@ -67,9 +68,10 @@ void Image::paintEvent(QPaintEvent* event)
     }
   }
 
-  for (auto i = 0u; i < imageModel->getLayerCount(); ++i)
+  for (auto i = static_cast<int>(imageModel->getLayerCount()) - 1; i >= 0; --i)
+  // reverse-iterate through layers to draw the bottom layer first
   {
-    painter.drawImage(targetRect, *imageModel->getLayerImage(i), sourceRect, Qt::ImageConversionFlag::NoFormatConversion);
+    painter.drawImage(targetRect, *imageModel->getLayerImage(static_cast<unsigned int>(i)), sourceRect, Qt::ImageConversionFlag::NoFormatConversion);
   }
   
   if (drawGrid && scale >= 4)

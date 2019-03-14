@@ -56,11 +56,16 @@ void ImageModel::addLayer()
   memset(layers.back()->bits(), 0, layers.back()->sizeInBytes());
 
   setSelectedLayerIndex(static_cast<unsigned int>(layers.size()) - 1u);
+
+  // do not emit the layersChanged signal as adding a transparent layer can not change the image
 }
 
 void ImageModel::removeSelectedLayer()
 {
+  layers.erase(layers.begin() + selectedLayerIndex);
 
+  // emit the layersChanged signal as removing a layer is likely to cause a change in the image
+  emit layersChanged();
 }
 
 QRect ImageModel::drawOnSelectedLayer(const QPoint point)

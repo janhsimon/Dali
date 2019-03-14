@@ -29,6 +29,7 @@ public:
 signals: 
   void paletteChanged();
   void selectedPaletteColorIndexChanged();
+  void layersChanged();
   void imageChanged();
 
 private:

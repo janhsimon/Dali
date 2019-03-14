@@ -1,5 +1,7 @@
 #include "Layers.hpp"
 
+#include <iostream>
+
 Layers::Layers(ImageModel* imageModel, QWidget* parent) :
   imageModel(imageModel),
   QWidget(parent)
@@ -11,6 +13,8 @@ Layers::Layers(ImageModel* imageModel, QWidget* parent) :
 
   layerList = std::make_unique<QListWidget>(this);
   layerList->addItem("Layer 1");
+  layerList->setDragDropMode(QAbstractItemView::InternalMove); // allow re-ordering of list via drag-and-drop
+  layerList->setEditTriggers(layerList->editTriggers() | QAbstractItemView::SelectedClicked | QAbstractItemView::EditKeyPressed); // allow renaming of list items
   rootLayout->addWidget(layerList.get(), 0, 0);
 
   const auto buttonBar = new QWidget(this);
@@ -37,6 +41,28 @@ Layers::Layers(ImageModel* imageModel, QWidget* parent) :
   setLayout(rootLayout);
 
   connect(layerList.get(), &QListWidget::currentRowChanged, this, [&](int currentRow) { this->imageModel->setSelectedLayerIndex(currentRow); });
-  connect(addLayerButton, &QPushButton::clicked, this, [&]() { this->imageModel->addLayer(); layerList->addItem("New Layer"); });
-  connect(removeLayerButton, &QPushButton::clicked, this, [&]() { this->imageModel->removeSelectedLayer(); });
+  
+  connect(layerList.get()->model(), &QAbstractItemModel::rowsMoved, this, [&](const QModelIndex&, int from, int, const QModelIndex&, int to)
+  {
+    std::cout << "From " << std::to_string(from) << " to " << std::to_string(to) << std::endl;
+  });
+  
+  connect(addLayerButton, &QPushButton::clicked, this, [&]()
+  {
+    this->imageModel->addLayer();
+    layerList->addItem("Layer " + QString::number(layerList->count() + 1));
+    layerList->setItemSelected(layerList->item(layerList->count() - 1), true);
+  });
+  
+  connect(removeLayerButton, &QPushButton::clicked, this, [&]()
+  {
+    if (this->imageModel->getLayerCount() <= 1)
+    {
+      return;
+    }
+
+    this->imageModel->removeSelectedLayer();
+    layerList->takeItem(this->imageModel->getSelectedLayerIndex());
+    this->imageModel->setSelectedLayerIndex(this->imageModel->getSelectedLayerIndex() - 1);
+  });
 }
