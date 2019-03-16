@@ -62,7 +62,7 @@ void Image::paintEvent(QPaintEvent* event)
     {
       for (auto x = left; x <= right; ++x)
       {
-        const auto color = (x % 2 != y % 2) ? QColor(100, 100, 100) : QColor(88, 88, 88);
+        const auto color = (x % 2 != y % 2) ? BACKGROUND_COLOR_BRIGHT : BACKGROUND_COLOR_DARK;
         painter.fillRect(QRect(x * BACKGROUND_BLOCK_SIZE, y * BACKGROUND_BLOCK_SIZE, BACKGROUND_BLOCK_SIZE, BACKGROUND_BLOCK_SIZE), color);
       }
     }

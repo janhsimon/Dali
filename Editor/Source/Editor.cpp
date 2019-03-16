@@ -1,5 +1,6 @@
 #include "Editor.hpp"
 #include "Palette.hpp"
+#include "PreviewWindow.hpp"
 
 Editor::Editor(QWidget* parent) :
   QMainWindow(parent)
@@ -49,11 +50,9 @@ Editor::Editor(QWidget* parent) :
   menuBar = std::make_unique<MenuBar>(mainArea.get(), this);
   setMenuBar(menuBar.get());
 
-  const auto previewWindow = new QWidget(this);
-  previewWindow->setMinimumSize(320, 200);
-  previewWindow->setWindowTitle("Preview");
-  previewWindow->setWindowFlags(Qt::Tool | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
+  const auto previewWindow = new PreviewWindow(mainArea.get(), this);
   previewWindow->show();
+  //previewWindow->move(QPoint(pos().x() /*- previewWindow->frameGeometry().width()*/, pos().y() /*- previewWindow->frameGeometry().height()*/));
 }
 
 int main(int argc, char* argv[])
