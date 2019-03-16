@@ -1,7 +1,5 @@
 #include "Layers.hpp"
 
-#include <iostream>
-
 Layers::Layers(ImageModel* imageModel, QWidget* parent) :
   imageModel(imageModel),
   QWidget(parent)
@@ -44,13 +42,17 @@ Layers::Layers(ImageModel* imageModel, QWidget* parent) :
   
   connect(layerList.get()->model(), &QAbstractItemModel::rowsMoved, this, [&](const QModelIndex&, int from, int, const QModelIndex&, int to)
   {
-    std::cout << "From " << std::to_string(from) << " to " << std::to_string(to) << std::endl;
+    this->imageModel->changeLayerOrder(from, to);
+
+    // make sure to update the selected layer index of the model after changing the layer order
+    this->imageModel->setSelectedLayerIndex(layerList->currentRow());
   });
   
   connect(addLayerButton, &QPushButton::clicked, this, [&]()
   {
     this->imageModel->addLayer();
     layerList->addItem("Layer " + QString::number(layerList->count() + 1));
+    
     layerList->setItemSelected(layerList->item(layerList->count() - 1), true);
   });
   
@@ -63,6 +65,7 @@ Layers::Layers(ImageModel* imageModel, QWidget* parent) :
 
     this->imageModel->removeSelectedLayer();
     layerList->takeItem(this->imageModel->getSelectedLayerIndex());
-    this->imageModel->setSelectedLayerIndex(this->imageModel->getSelectedLayerIndex() - 1);
+    this->imageModel->setSelectedLayerIndex(/*this->imageModel->getSelectedLayerIndex() - 1*/0);
+    layerList->setItemSelected(layerList->item(0), true);
   });
 }

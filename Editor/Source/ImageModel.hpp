@@ -9,7 +9,7 @@ class ImageModel : public QObject
 public:
   ImageModel(unsigned int width, unsigned int height);
 
-  QRgb getPaletteColorAtIndex(unsigned int index) const;
+  QRgb getPaletteColorAtIndex(const unsigned int index) const;
   void setPaletteColorAtIndex(const unsigned int index, const QRgb color);
   unsigned int getPaletteColorCount() const;
   unsigned int getSelectedPaletteColorIndex() const { return selectedPaletteColorIndex; }
@@ -18,7 +18,8 @@ public:
   unsigned int getLayerCount() const { return static_cast<unsigned int>(layers.size()); }
   void addLayer();
   void removeSelectedLayer();
-  QImage* getLayerImage(unsigned int layerIndex) const { return layers[layerIndex].get(); }
+  void changeLayerOrder(const unsigned int fromIndex, const unsigned int toIndex);
+  QImage* getLayerImage(const unsigned int layerIndex) const { return layers[layerIndex].get(); }
   unsigned int getSelectedLayerIndex() const { return selectedLayerIndex; };
   void setSelectedLayerIndex(const unsigned int selectedLayerIndex) { this->selectedLayerIndex = selectedLayerIndex; }
 

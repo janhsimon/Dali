@@ -4,6 +4,7 @@ ImageModel::ImageModel(unsigned int width, unsigned int height) :
   width(width),
   height(height)
 {
+  // allocate an internal first palette color for transparency
   paletteColors.reserve(1 + 16);
   paletteColors.push_back(qRgba(0, 0, 0, 0));
   for (auto i = 0u; i < 16u; ++i)
@@ -65,6 +66,24 @@ void ImageModel::removeSelectedLayer()
   layers.erase(layers.begin() + selectedLayerIndex);
 
   // emit the layersChanged signal as removing a layer is likely to cause a change in the image
+  emit layersChanged();
+}
+
+void ImageModel::changeLayerOrder(const unsigned int fromIndex, const unsigned int toIndex)
+{
+  if (fromIndex < toIndex)
+  // moving a layer down to a lower position in the order
+  {
+    std::rotate(layers.begin() + fromIndex, layers.begin() + fromIndex + 1, layers.begin() + toIndex);
+    
+  }
+  else
+  // moving a layer up to a higher position in the order
+  {
+    std::rotate(layers.begin() + toIndex, layers.begin() + fromIndex, layers.begin() + fromIndex + 1);
+  }
+
+  // emit the layersChanged signal as changing the order of layers is likely to cause a change in the image
   emit layersChanged();
 }
 
