@@ -87,7 +87,7 @@ void ImageModel::changeLayerOrder(const unsigned int fromIndex, const unsigned i
   emit layersChanged();
 }
 
-QRect ImageModel::drawOnSelectedLayer(const QPoint point)
+void ImageModel::drawOnSelectedLayer(const QPoint point)
 {
   // TODO: this is simulating a brush tool, move this code there later
 
@@ -132,7 +132,6 @@ QRect ImageModel::drawOnSelectedLayer(const QPoint point)
     }
   }
 
-  emit imageChanged();
-
-  return QRect(point.x() + brushStartX, point.y() + brushStartY, brushSizeX, brushSizeY);
+  const auto imageRect = QRect(point.x() + brushStartX, point.y() + brushStartY, brushSizeX, brushSizeY);
+  emit imageChanged(imageRect);
 }

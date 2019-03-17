@@ -25,13 +25,13 @@ public:
 
   int getWidth() const { return width; }
   int getHeight() const { return height; }
-  QRect drawOnSelectedLayer(const QPoint point);
+  void drawOnSelectedLayer(const QPoint point);
 
 signals: 
   void paletteChanged();
   void selectedPaletteColorIndexChanged();
   void layersChanged();
-  void imageChanged();
+  void imageChanged(const QRect& imageRect);
 
 private:
   QVector<QRgb> paletteColors;

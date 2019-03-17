@@ -10,6 +10,11 @@ Image::Image(unsigned int width, unsigned int height, QWidget* parent) :
 
   connect(imageModel.get(), &ImageModel::paletteChanged, this, [&]() { repaint(); });
   connect(imageModel.get(), &ImageModel::layersChanged, this, [&]() { repaint(); });
+  connect(imageModel.get(), &ImageModel::imageChanged, this, [&](const QRect& imageRect)
+  {
+    const auto screenRect = QRect(imageRect.x() * scale, imageRect.y() * scale, imageRect.width() * scale, imageRect.height() * scale);
+    repaint(screenRect);
+  });
 }
 
 void Image::mousePressEvent(QMouseEvent *event)
@@ -28,8 +33,7 @@ void Image::mouseMoveEvent(QMouseEvent* event)
       return;
     }
 
-    auto rectToRepaint = imageModel->drawOnSelectedLayer(mousePosition);
-    repaint(QRect(rectToRepaint.x() * scale, rectToRepaint.y() * scale, rectToRepaint.width() * scale, rectToRepaint.height() * scale));
+    imageModel->drawOnSelectedLayer(mousePosition);
   }
 }
 
@@ -68,10 +72,10 @@ void Image::paintEvent(QPaintEvent* event)
     }
   }
 
-  for (auto i = static_cast<int>(imageModel->getLayerCount()) - 1; i >= 0; --i)
+  for (auto i = imageModel->getLayerCount(); i > 0u; --i)
   // reverse-iterate through layers to draw the bottom layer first
   {
-    painter.drawImage(targetRect, *imageModel->getLayerImage(static_cast<unsigned int>(i)), sourceRect, Qt::ImageConversionFlag::NoFormatConversion);
+    painter.drawImage(targetRect, *imageModel->getLayerImage(i - 1u), sourceRect, Qt::ImageConversionFlag::NoFormatConversion);
   }
   
   if (drawGrid && scale >= 4)
