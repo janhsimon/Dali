@@ -1,13 +1,13 @@
 #pragma once
 
-#include "ImageTab.hpp"
+#include "Tab.hpp"
 
-class MainArea : public QTabWidget
+class TabArea : public QTabWidget
 {
   Q_OBJECT
 
 public:
-  MainArea(QWidget* parent = nullptr);
+  TabArea(QWidget* parent = nullptr);
 
   void newImageTab(const QString& title, unsigned int width, unsigned int height);
   void closeCurrentImageTab();

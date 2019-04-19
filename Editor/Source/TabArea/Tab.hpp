@@ -1,13 +1,13 @@
 #pragma once
 
-#include "ImageScrollArea.hpp"
+#include "Image/ImageScrollArea.hpp"
 
-class ImageTab : public QWidget
+class Tab : public QWidget
 {
   Q_OBJECT
 
 public:
-  ImageTab(unsigned int width, unsigned int height, QWidget* parent = nullptr);
+  Tab(unsigned int width, unsigned int height, QWidget* parent = nullptr);
 
   Image* getImage() const { return imageScrollArea->getImage(); }
 

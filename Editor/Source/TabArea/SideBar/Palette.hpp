@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImageModel.hpp"
+#include "../../Models/ImageModel.hpp"
 
 class Palette : public QWidget
 {

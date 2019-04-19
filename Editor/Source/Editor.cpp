@@ -1,5 +1,5 @@
 #include "Editor.hpp"
-#include "Palette.hpp"
+#include "TabArea/Sidebar/Palette.hpp"
 #include "PreviewWindow.hpp"
 
 Editor::Editor(QWidget* parent) :
@@ -20,21 +20,10 @@ Editor::Editor(QWidget* parent) :
   const auto mainLayout = new QHBoxLayout();
   mainLayout->setContentsMargins(0, 0, 0, 0);
 
-  const auto toolBar = new QWidget(rootWidget);
-  toolBar->setStyleSheet("background-color: #8080FF");
-  const auto toolBarLayout = new QVBoxLayout();
-  toolBarLayout->addWidget(new QPushButton("Pick"));
-  toolBarLayout->addWidget(new QPushButton("Brush"));
-  toolBarLayout->addWidget(new QPushButton("Line"));
-  toolBarLayout->addWidget(new QPushButton("Square"));
-  toolBarLayout->addWidget(new QPushButton("Circle"));
-  toolBarLayout->addWidget(new QPushButton("Fill"));
-  toolBarLayout->addStretch();
-  toolBar->setLayout(toolBarLayout);
-  mainLayout->addWidget(toolBar);
+  mainLayout->addWidget(new ToolBar(rootWidget));
 
-  mainArea = std::make_unique<MainArea>(this);
-  mainLayout->addWidget(mainArea.get());
+  tabArea = std::make_unique<TabArea>(this);
+  mainLayout->addWidget(tabArea.get());
 
   rootLayout->addLayout(mainLayout);
   
@@ -47,12 +36,15 @@ Editor::Editor(QWidget* parent) :
   rootWidget->setLayout(rootLayout);
   setCentralWidget(rootWidget);
 
-  menuBar = std::make_unique<MenuBar>(mainArea.get(), this);
+  menuBar = std::make_unique<MenuBar>(tabArea.get(), this);
   setMenuBar(menuBar.get());
 
-  const auto previewWindow = new PreviewWindow(mainArea.get(), this);
-  previewWindow->show();
+  const auto previewWindow = new PreviewWindow(tabArea.get(), this);
   //previewWindow->move(QPoint(pos().x() /*- previewWindow->frameGeometry().width()*/, pos().y() /*- previewWindow->frameGeometry().height()*/));
+  //previewWindow->setGeometry(x(), y() + height() - previewWindow->height(), previewWindow->width(), previewWindow->height());
+  previewWindow->show();
+
+  setMinimumSize(1024, 768);
 }
 
 int main(int argc, char* argv[])
@@ -60,7 +52,7 @@ int main(int argc, char* argv[])
   QApplication application(argc, argv);
 
   Editor editor;
-  editor.showMaximized();
+  editor.show/*Maximized*/();
 
   return application.exec();
 }

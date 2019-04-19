@@ -12,11 +12,6 @@ project "Editor"
   qtpath(qt)
   qtmodules { "core", "gui", "widgets" }
   qtprefix "Qt5"
-  
-  filter "system:windows"
-    cppdialect "c++17"
-    staticruntime "On"
-    systemversion "latest"
 
   filter "Debug"
     defines "DEBUG"
@@ -26,7 +21,15 @@ project "Editor"
   filter "Release"
     optimize "On"
   
-  filter { "Debug", "system:windows" }
+
+  -- windows
+
+  filter "system:windows"
+    cppdialect "c++17"
+    staticruntime "On"
+    systemversion "latest"
+
+  filter { "system:windows", "Debug" }
     postbuildcommands
     {
       ("{COPY} " .. qt .. "/bin/Qt5Cored.dll Bin/%{cfg.buildcfg}"),
@@ -34,7 +37,7 @@ project "Editor"
       ("{COPY} " .. qt .. "/bin/Qt5Widgetsd.dll Bin/%{cfg.buildcfg}")
     }
 
-  filter { "Release", "system:windows" }  
+  filter { "system:windows", "Release" }  
     postbuildcommands
     {
       ("{COPY} " .. qt .. "/bin/Qt5Core.dll Bin/"),

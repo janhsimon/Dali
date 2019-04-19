@@ -13,7 +13,8 @@ ImageModel::ImageModel(unsigned int width, unsigned int height) :
   }
 
   selectedPaletteColorIndex = 0u;
-  
+
+  addLayer();
   addLayer();
 }
 
@@ -58,7 +59,7 @@ void ImageModel::addLayer()
 
   setSelectedLayerIndex(static_cast<unsigned int>(layers.size()) - 1u);
 
-  // do not emit the layersChanged signal as adding a transparent layer can not change the image
+  // do not emit the layersChanged signal as adding a (transparent) layer can not change the image
 }
 
 void ImageModel::removeSelectedLayer()
@@ -69,7 +70,7 @@ void ImageModel::removeSelectedLayer()
   emit layersChanged();
 }
 
-void ImageModel::changeLayerOrder(const unsigned int fromIndex, const unsigned int toIndex)
+void ImageModel::changeLayerOrder(unsigned int fromIndex, unsigned int toIndex)
 {
   if (fromIndex < toIndex)
   // moving a layer down to a lower position in the order

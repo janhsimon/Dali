@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImageModel.hpp"
+#include "../../Models/ImageModel.hpp"
 
 class Image : public QWidget
 {
@@ -20,6 +20,7 @@ public:
 protected:
   void mousePressEvent(QMouseEvent* event) override;
   void mouseMoveEvent(QMouseEvent* event) override;
+  void leaveEvent(QEvent* event) override;
   void paintEvent(QPaintEvent* event) override;
 
 private:
@@ -32,8 +33,11 @@ private:
   unsigned int scale;
   float inverseScale; // precalculated for performance
   bool drawGrid;
+  QPoint mousePosition; // in image space
+  QRect rectToOverwrite; // in screen space
 
   void setScale(unsigned int scale);
 
   QPoint ScreenToImagePoint(const QPointF point) const;
+  bool doesImageContainPoint(const QPoint point) const;
 };

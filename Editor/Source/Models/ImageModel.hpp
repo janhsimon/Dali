@@ -18,7 +18,7 @@ public:
   unsigned int getLayerCount() const { return static_cast<unsigned int>(layers.size()); }
   void addLayer();
   void removeSelectedLayer();
-  void changeLayerOrder(const unsigned int fromIndex, const unsigned int toIndex);
+  void changeLayerOrder(unsigned int fromIndex, unsigned int toIndex);
   QImage* getLayerImage(const unsigned int layerIndex) const { return layers[layerIndex].get(); }
   unsigned int getSelectedLayerIndex() const { return selectedLayerIndex; };
   void setSelectedLayerIndex(const unsigned int selectedLayerIndex) { this->selectedLayerIndex = selectedLayerIndex; }
