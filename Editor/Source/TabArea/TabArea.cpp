@@ -1,6 +1,6 @@
 #include "TabArea.hpp"
 
-TabArea::TabArea(const BrushModel* brushModel, QWidget* parent) :
+TabArea::TabArea(BrushModel* brushModel, QWidget* parent) :
   QTabWidget(parent),
   brushModel(brushModel)
 {

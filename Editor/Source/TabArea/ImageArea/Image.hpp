@@ -7,7 +7,7 @@ class Image : public QWidget
   Q_OBJECT
 
 public:
-  Image(const BrushModel* brushModel, unsigned int width, unsigned int height, QWidget* parent = nullptr);
+  Image(BrushModel* brushModel, unsigned int width, unsigned int height, QWidget* parent = nullptr);
 
   void zoomIn() { setScale(std::min(++scale, 128u)); }
   void zoomOut() { setScale(std::max(--scale, 1u)); }
@@ -29,7 +29,7 @@ private:
   static constexpr auto BACKGROUND_COLOR_BRIGHT = qRgb(100, 100, 100);
   static constexpr auto BACKGROUND_COLOR_DARK = qRgb(88, 88, 88);
 
-  const BrushModel* brushModel;
+  BrushModel* brushModel;
   std::unique_ptr<ImageModel> imageModel;
   unsigned int scale;
   float inverseScale; // precalculated for performance

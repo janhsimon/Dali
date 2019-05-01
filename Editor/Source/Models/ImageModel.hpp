@@ -7,7 +7,7 @@ class ImageModel : public QObject
   Q_OBJECT
 
 public:
-  ImageModel(const BrushModel* brushModel, unsigned int width, unsigned int height);
+  ImageModel(BrushModel* brushModel, unsigned int width, unsigned int height);
 
   QRgb getPaletteColorAtIndex(const unsigned int index) const;
   void setPaletteColorAtIndex(const unsigned int index, const QRgb color);
@@ -35,7 +35,7 @@ signals:
   void imageChanged(const QRect& imageRect);
 
 private:
-  const BrushModel* brushModel;
+  BrushModel* brushModel;
 
   QVector<QRgb> paletteColors;
   unsigned int selectedPaletteColorIndex;

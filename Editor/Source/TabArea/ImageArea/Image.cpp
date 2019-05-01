@@ -1,6 +1,6 @@
 #include "Image.hpp"
 
-Image::Image(const BrushModel* brushModel, unsigned int width, unsigned int height, QWidget* parent) :
+Image::Image(BrushModel* brushModel, unsigned int width, unsigned int height, QWidget* parent) :
   QWidget(parent),
   brushModel(brushModel),
   drawGrid(false),

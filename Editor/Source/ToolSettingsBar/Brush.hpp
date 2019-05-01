@@ -24,4 +24,6 @@ private:
 
   std::unique_ptr<BrushModel> brushModel;
   float inverseScaleX, inverseScaleY; // precalculated for performance
+
+  void update(const QMouseEvent* event);
 };

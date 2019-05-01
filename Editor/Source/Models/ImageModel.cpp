@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-ImageModel::ImageModel(const BrushModel* brushModel, unsigned int width, unsigned int height) :
+ImageModel::ImageModel(BrushModel* brushModel, unsigned int width, unsigned int height) :
   brushModel(brushModel),
   width(width),
   height(height)
@@ -16,6 +16,11 @@ ImageModel::ImageModel(const BrushModel* brushModel, unsigned int width, unsigne
   }
 
   selectedPaletteColorIndex = 0u;
+
+  connect(this, &ImageModel::selectedPaletteColorIndexChanged, this, [&]() { this->brushModel->setColor(getSelectedPaletteColor()); });
+  connect(this, &ImageModel::paletteChanged, this, [&]() { this->brushModel->setColor(getSelectedPaletteColor()); });
+
+  brushModel->setColor(getSelectedPaletteColor());
 
   addLayer();
   addLayer();

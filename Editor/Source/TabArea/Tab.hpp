@@ -7,7 +7,7 @@ class Tab : public QWidget
   Q_OBJECT
 
 public:
-  Tab(const BrushModel* brushModel, unsigned int width, unsigned int height, QWidget* parent = nullptr);
+  Tab(BrushModel* brushModel, unsigned int width, unsigned int height, QWidget* parent = nullptr);
 
   Image* getImage() const { return imageArea->getImage(); }
 

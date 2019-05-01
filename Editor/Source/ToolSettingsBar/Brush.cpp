@@ -9,29 +9,18 @@ Brush::Brush(QWidget* parent) :
 
   inverseScaleX = static_cast<float>(width()) / static_cast<float>(brushModel->getWidth());
   inverseScaleY = static_cast<float>(height()) / static_cast<float>(brushModel->getHeight());
+
+  connect(brushModel.get(), &BrushModel::colorChanged, this, [&]() { repaint(); });
 }
 
 void Brush::mousePressEvent(QMouseEvent *event)
 {
-  mouseMoveEvent(event);
+  update(event);
 }
 
 void Brush::mouseMoveEvent(QMouseEvent* event)
 {
-  if (event->buttons() & Qt::LeftButton)
-  {
-    const auto mousePosition = event->localPos();
-    const auto i = static_cast<int>(mousePosition.x() / inverseScaleX);
-    const auto j = static_cast<int>(mousePosition.y() / inverseScaleY);
-
-    if (i >= 0 && i < brushModel->getWidth() && j >= 0 && j < brushModel->getHeight())
-    {
-      brushModel->setBrushAt(i, j, 1);
-
-      const auto screenRect = QRectF(i * inverseScaleX, j * inverseScaleY, inverseScaleX, inverseScaleY).toAlignedRect();
-      repaint(screenRect);
-    }
-  }
+  update(event);
 }
 
 void Brush::paintEvent(QPaintEvent* event)
@@ -84,5 +73,28 @@ void Brush::paintEvent(QPaintEvent* event)
   {
     const auto lineY = y * inverseScaleY;
     painter.drawLine(targetRect.left(), lineY, targetRect.right(), lineY);
+  }
+}
+
+void Brush::update(const QMouseEvent* event)
+{
+  const auto left = static_cast<bool>(event->buttons() & Qt::LeftButton);
+  const auto right = static_cast<bool>(event->buttons() & Qt::RightButton);
+
+  if (left == right)
+  {
+    return;
+  }
+
+  const auto mousePosition = event->localPos();
+  const auto i = static_cast<int>(mousePosition.x() / inverseScaleX);
+  const auto j = static_cast<int>(mousePosition.y() / inverseScaleY);
+
+  if (i >= 0 && i < brushModel->getWidth() && j >= 0 && j < brushModel->getHeight())
+  {
+    brushModel->setBrushAt(i, j, left);
+
+    const auto screenRect = QRectF(i * inverseScaleX, j * inverseScaleY, inverseScaleX, inverseScaleY).toAlignedRect();
+    repaint(screenRect);
   }
 }
