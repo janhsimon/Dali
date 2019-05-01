@@ -1,31 +1,32 @@
 #pragma once
 
-#include <QtWidgets>
+#include "BrushModel.hpp"
 
 class ImageModel : public QObject
 {
   Q_OBJECT
 
 public:
-  ImageModel(unsigned int width, unsigned int height);
+  ImageModel(const BrushModel* brushModel, unsigned int width, unsigned int height);
 
   QRgb getPaletteColorAtIndex(const unsigned int index) const;
   void setPaletteColorAtIndex(const unsigned int index, const QRgb color);
   unsigned int getPaletteColorCount() const;
   unsigned int getSelectedPaletteColorIndex() const { return selectedPaletteColorIndex; }
   void setSelectedPaletteColorIndex(const unsigned int selectedPaletteColorIndex);
+  QRgb getSelectedPaletteColor() const { return getPaletteColorAtIndex(getSelectedPaletteColorIndex()); }
 
   unsigned int getLayerCount() const { return static_cast<unsigned int>(layers.size()); }
   void addLayer();
   void removeSelectedLayer();
   void changeLayerOrder(unsigned int fromIndex, unsigned int toIndex);
-  QImage* getLayerImage(const unsigned int layerIndex) const { return layers[layerIndex].get(); }
+  QImage* getLayerImage(const unsigned int layerIndex) const;
   unsigned int getSelectedLayerIndex() const { return selectedLayerIndex; };
-  void setSelectedLayerIndex(const unsigned int selectedLayerIndex) { this->selectedLayerIndex = selectedLayerIndex; }
+  void setSelectedLayerIndex(const unsigned int selectedLayerIndex);
 
   int getWidth() const { return width; }
   int getHeight() const { return height; }
-  void drawOnSelectedLayer(const QPoint point);
+  void drawOnSelectedLayer(const QPoint& point);
 
 signals: 
   void paletteChanged();
@@ -34,11 +35,13 @@ signals:
   void imageChanged(const QRect& imageRect);
 
 private:
+  const BrushModel* brushModel;
+
   QVector<QRgb> paletteColors;
   unsigned int selectedPaletteColorIndex;
 
   std::vector<std::unique_ptr<QImage>> layers;
-  unsigned int selectedLayerIndex;
+  unsigned int selectedLayerIndex; // not including internal first palette color
 
   int width, height;
 };

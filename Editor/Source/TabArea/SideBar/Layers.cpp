@@ -1,8 +1,8 @@
 #include "Layers.hpp"
 
 Layers::Layers(ImageModel* imageModel, QWidget* parent) :
-  imageModel(imageModel),
-  QWidget(parent)
+  QWidget(parent),
+  imageModel(imageModel)
 {
   setStyleSheet("background-color: #FF0080");
 

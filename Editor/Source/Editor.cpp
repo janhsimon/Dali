@@ -1,6 +1,7 @@
 #include "Editor.hpp"
-#include "TabArea/Sidebar/Palette.hpp"
 #include "PreviewWindow.hpp"
+#include "Models/BrushModel.hpp"
+#include "TabArea/TabArea.hpp"
 
 Editor::Editor(QWidget* parent) :
   QMainWindow(parent)
@@ -9,20 +10,15 @@ Editor::Editor(QWidget* parent) :
   const auto rootLayout = new QVBoxLayout();
   rootLayout->setContentsMargins(0, 0, 0, 0);
   
-  const auto toolSettingsBar = new QWidget(rootWidget);
-  toolSettingsBar->setStyleSheet("background-color: #FF8080");
-  toolSettingsBar->setMinimumHeight(64);
-  const auto toolSettingsBarLayout = new QHBoxLayout();
-  toolSettingsBarLayout->addWidget(new QLabel("Tool-specific settings go here..."));
-  toolSettingsBar->setLayout(toolSettingsBarLayout);
-  rootLayout->addWidget(toolSettingsBar);
+  toolSettingsBar = std::make_unique<ToolSettingsBar>(rootWidget);
+  rootLayout->addWidget(toolSettingsBar.get());
 
   const auto mainLayout = new QHBoxLayout();
   mainLayout->setContentsMargins(0, 0, 0, 0);
 
   mainLayout->addWidget(new ToolBar(rootWidget));
 
-  tabArea = std::make_unique<TabArea>(this);
+  tabArea = std::make_unique<TabArea>(toolSettingsBar->getBrushModel(), this);
   mainLayout->addWidget(tabArea.get());
 
   rootLayout->addLayout(mainLayout);

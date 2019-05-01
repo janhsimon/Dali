@@ -2,6 +2,7 @@
 
 #include "MenuBar.hpp"
 #include "ToolBar.hpp"
+#include "ToolSettingsBar/ToolSettingsBar.hpp"
 
 class Editor : public QMainWindow
 {
@@ -12,6 +13,7 @@ public:
 
 private:
   std::unique_ptr<MenuBar> menuBar;
+  std::unique_ptr<ToolSettingsBar> toolSettingsBar;
   std::unique_ptr<ToolBar> toolBar;
   std::unique_ptr<TabArea> tabArea;
 };

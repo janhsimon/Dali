@@ -1,8 +1,8 @@
 #include "PreviewWindow.hpp"
 
 PreviewWindow::PreviewWindow(const TabArea* tabArea, QWidget* parent) :
-  tabArea(tabArea),
-  QWidget(parent)
+  QWidget(parent),
+  tabArea(tabArea)
 {
   setWindowTitle("Preview");
   setWindowFlags(Qt::Tool | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
@@ -47,14 +47,14 @@ void PreviewWindow::paintEvent(QPaintEvent* event)
 
   QPainter painter(this);
 
-  const auto imageRect = event->rect();
+  const auto rect = event->rect();
 
   // draw the background
   {
-    const auto top = static_cast<int>(imageRect.top() * INVERSE_BACKGROUND_BLOCK_SIZE);
-    const auto left = static_cast<int>(imageRect.left() * INVERSE_BACKGROUND_BLOCK_SIZE);
-    const auto bottom = static_cast<int>(imageRect.bottom() * INVERSE_BACKGROUND_BLOCK_SIZE);
-    const auto right = static_cast<int>(imageRect.right() * INVERSE_BACKGROUND_BLOCK_SIZE);
+    const auto top = static_cast<int>(rect.top() * INVERSE_BACKGROUND_BLOCK_SIZE);
+    const auto left = static_cast<int>(rect.left() * INVERSE_BACKGROUND_BLOCK_SIZE);
+    const auto bottom = static_cast<int>(rect.bottom() * INVERSE_BACKGROUND_BLOCK_SIZE);
+    const auto right = static_cast<int>(rect.right() * INVERSE_BACKGROUND_BLOCK_SIZE);
 
     for (auto y = top; y <= bottom; ++y)
     {
@@ -70,6 +70,8 @@ void PreviewWindow::paintEvent(QPaintEvent* event)
   for (auto i = currentImageModel->getLayerCount(); i > 0u; --i)
   // reverse-iterate through layers to draw the bottom layer first
   {
-    painter.drawImage(imageRect, *currentImageModel->getLayerImage(i - 1u), imageRect, Qt::ImageConversionFlag::NoFormatConversion);
+    // avoid issues with unsigned integer overflow
+    const auto layerIndex = i - 1u;
+    painter.drawImage(rect, *currentImageModel->getLayerImage(layerIndex), rect, Qt::NoFormatConversion);
   }
 }

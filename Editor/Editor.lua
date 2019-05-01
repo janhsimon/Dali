@@ -40,7 +40,7 @@ project "Editor"
   filter { "system:windows", "Release" }  
     postbuildcommands
     {
-      ("{COPY} " .. qt .. "/bin/Qt5Core.dll Bin/"),
-      ("{COPY} " .. qt .. "/bin/Qt5Gui.dll Bin/"),
-      ("{COPY} " .. qt .. "/bin/Qt5Widgets.dll Bin/")
+      ("{COPY} " .. qt .. "/bin/Qt5Core.dll Bin/%{cfg.buildcfg}"),
+      ("{COPY} " .. qt .. "/bin/Qt5Gui.dll Bin/%{cfg.buildcfg}"),
+      ("{COPY} " .. qt .. "/bin/Qt5Widgets.dll Bin/%{cfg.buildcfg}")
     }

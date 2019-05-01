@@ -1,16 +1,16 @@
 #include "MenuBar.hpp"
 
 MenuBar::MenuBar(TabArea* tabArea, QWidget* parent) :
-  tabArea(tabArea),
-  QMenuBar(parent)
+  QMenuBar(parent),
+  tabArea(tabArea)
 {
   const auto fileMenu = addMenu("File");
-  fileMenu->addAction("New Project...", [&]() { this->tabArea->newImageTab("Untitled.dlp", 128u, 128u); }, Qt::Modifier::CTRL + Qt::Key::Key_N);
+  fileMenu->addAction("New Project...", [&]() { this->tabArea->newImageTab("Untitled.dali", 128u, 128u); }, Qt::Modifier::CTRL + Qt::Key::Key_N);
 
   fileMenu->addAction("Open Project...");
   const auto openRecentMenu = fileMenu->addMenu("Open Recent Projects");
-  openRecentMenu->addAction("PlatformerMockup.dlp");
-  openRecentMenu->addAction("DemoProject.dlp");
+  openRecentMenu->addAction("PlatformerMockup.dali");
+  openRecentMenu->addAction("DemoProject.dali");
   fileMenu->addSeparator();
   fileMenu->addAction("Close Project", [&]() { this->tabArea->closeCurrentImageTab(); }, Qt::Modifier::CTRL + Qt::Key::Key_W);
   fileMenu->addAction("Close All Projects", [&]() { this->tabArea->closeAllImageTabs(); }, Qt::Modifier::CTRL + Qt::Modifier::SHIFT + Qt::Key::Key_W);

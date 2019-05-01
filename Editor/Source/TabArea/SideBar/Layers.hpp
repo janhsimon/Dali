@@ -4,6 +4,8 @@
 
 class Layers : public QWidget
 {
+  Q_OBJECT
+
 public:
   Layers(ImageModel* imageModel, QWidget* parent = nullptr);
 

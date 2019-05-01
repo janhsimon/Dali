@@ -1,6 +1,9 @@
 #include "ImageModel.hpp"
 
-ImageModel::ImageModel(unsigned int width, unsigned int height) :
+#include <cassert>
+
+ImageModel::ImageModel(const BrushModel* brushModel, unsigned int width, unsigned int height) :
+  brushModel(brushModel),
   width(width),
   height(height)
 {
@@ -20,14 +23,18 @@ ImageModel::ImageModel(unsigned int width, unsigned int height) :
 
 QRgb ImageModel::getPaletteColorAtIndex(unsigned int index) const
 {
-  // take into account that we have an internal first palette color
-  return paletteColors[index + 1];
+  // take the internal first palette color into account
+  const auto adjustedIndex = index + 1u;
+  assert(adjustedIndex < static_cast<unsigned int>(paletteColors.size()));
+  return paletteColors[adjustedIndex];
 }
 
 void ImageModel::setPaletteColorAtIndex(const unsigned int index, const QRgb color)
 {
-  // take into account that we have an internal first palette color
-  paletteColors[index + 1] = color;
+  // take the internal first palette color into account
+  const auto adjustedIndex = index + 1u;
+  assert(adjustedIndex < static_cast<unsigned int>(paletteColors.size()));
+  paletteColors[adjustedIndex] = color;
 
   for (auto& layer : layers)
   {
@@ -39,13 +46,18 @@ void ImageModel::setPaletteColorAtIndex(const unsigned int index, const QRgb col
 
 unsigned int ImageModel::getPaletteColorCount() const
 {
-  // take into account that we have an internal first palette color
+  // take the internal first palette color into account
+  assert(paletteColors.size() > 0);
   return static_cast<unsigned int>(paletteColors.size()) - 1u;
 }
 
 void ImageModel::setSelectedPaletteColorIndex(const unsigned int selectedPaletteColorIndex)
 {
-  this->selectedPaletteColorIndex = selectedPaletteColorIndex;
+  // take the internal first palette color into account
+  const auto adjustedIndex = selectedPaletteColorIndex + 1u;
+  assert(adjustedIndex < static_cast<unsigned int>(paletteColors.size()));
+  this->selectedPaletteColorIndex = adjustedIndex - 1u;
+
   emit selectedPaletteColorIndexChanged();
 }
 
@@ -59,7 +71,7 @@ void ImageModel::addLayer()
 
   setSelectedLayerIndex(static_cast<unsigned int>(layers.size()) - 1u);
 
-  // do not emit the layersChanged signal as adding a (transparent) layer can not change the image
+  // do not emit the layersChanged signal as adding a transparent layer can not change the image
 }
 
 void ImageModel::removeSelectedLayer()
@@ -88,51 +100,44 @@ void ImageModel::changeLayerOrder(unsigned int fromIndex, unsigned int toIndex)
   emit layersChanged();
 }
 
-void ImageModel::drawOnSelectedLayer(const QPoint point)
+QImage* ImageModel::getLayerImage(const unsigned int layerIndex) const
 {
-  // TODO: this is simulating a brush tool, move this code there later
+  assert(layerIndex < layers.size());
+  return layers[layerIndex].get();
+}
 
-  constexpr unsigned char brush[] = { 0, 1, 0, 1, 1, 1, 0, 1, 0 };
-  auto brushStartX = -1, brushStartY = -1;
-  auto brushEndX = 1, brushEndY = 1;
-  const auto brushSizeX = (brushEndX - brushStartX) + 1;
-  const auto brushSizeY = (brushEndY - brushStartY) + 1;
+void ImageModel::setSelectedLayerIndex(const unsigned int selectedLayerIndex)
+{
+  assert(selectedLayerIndex < layers.size());
+  this->selectedLayerIndex = selectedLayerIndex;
+}
 
-  if (point.x() + brushStartX < 0)
+void ImageModel::drawOnSelectedLayer(const QPoint& point)
+{
+  for (auto y = 0; y < brushModel->getHeight(); ++y)
   {
-    brushStartX = 0;
-  }
-
-  if (point.x() + brushEndX >= width)
-  {
-    brushEndX = 0;
-  }
-
-  if (point.y() + brushStartY < 0)
-  {
-    brushStartY = 0;
-  }
-
-  if (point.y() + brushEndY >= height)
-  {
-    brushEndY = 0;
-  }
-
-  for (auto brushY = brushStartY; brushY <= brushEndY; ++brushY)
-  {
-    for (auto brushX = brushStartX; brushX <= brushEndX; ++brushX)
+    for (auto x = 0; x < brushModel->getWidth(); ++x)
     {
-      if (brush[(brushY + 1) * brushSizeX + brushX + 1] == 1)
+      if (!brushModel->getBrushAt(x, y))
       {
-        const auto i = point.x() + brushX;
-        const auto j = point.y() + brushY;
+        continue;
+      }
 
-        // take into account that we have an internal first palette color
-        layers[selectedLayerIndex]->scanLine(j)[i] = getSelectedPaletteColorIndex() + 1;
+      const auto i = point.x() + x;
+      const auto j = point.y() + y;
+
+      if (i >= 0 && i < width && j >= 0 && j < height)
+      {
+        // take the internal first palette color into account
+        const auto adjustedPaletteColorIndex = getSelectedPaletteColorIndex() + 1u;
+        assert(adjustedPaletteColorIndex < static_cast<unsigned int>(paletteColors.size()));
+
+        assert(selectedLayerIndex < layers.size());
+        layers[selectedLayerIndex]->scanLine(j)[i] = adjustedPaletteColorIndex;
       }
     }
   }
 
-  const auto imageRect = QRect(point.x() + brushStartX, point.y() + brushStartY, brushSizeX, brushSizeY);
+  const auto imageRect = QRect(point.x(), point.y(), brushModel->getWidth(), brushModel->getHeight());
   emit imageChanged(imageRect);
 }

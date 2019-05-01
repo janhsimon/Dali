@@ -1,23 +1,27 @@
 #include "Image.hpp"
 
-Image::Image(unsigned int width, unsigned int height, QWidget* parent) :
+Image::Image(const BrushModel* brushModel, unsigned int width, unsigned int height, QWidget* parent) :
   QWidget(parent),
+  brushModel(brushModel),
   drawGrid(false),
   mousePosition(-1, -1),
+  isLeftMouseButtonDown(false),
   rectToOverwrite(0, 0, 0, 0)
 {
-  imageModel = std::make_unique<ImageModel>(width, height);
+  imageModel = std::make_unique<ImageModel>(brushModel, width, height);
 
   setScale(4);
 
   // receive mouse move events even when no mouse buttons are pressed
   setMouseTracking(true);
+  
+  setCursor(Qt::CrossCursor);
 
   connect(imageModel.get(), &ImageModel::paletteChanged, this, [&]() { repaint(); });
   connect(imageModel.get(), &ImageModel::layersChanged, this, [&]() { repaint(); });
 
-  // we could connect to the image model's image changed signal here to
-  // redraw but instead we call repaint directly for optimal performance
+  // it is possible to connect to the image changed signal of the image model
+  // here to redraw but calling repaint directly gives better performance
 }
 
 void Image::mousePressEvent(QMouseEvent *event)
@@ -28,44 +32,22 @@ void Image::mousePressEvent(QMouseEvent *event)
 void Image::mouseMoveEvent(QMouseEvent* event)
 {
   // retrieve the mouse position in image space
-  mousePosition = ScreenToImagePoint(event->localPos());
-
-  if (!rectToOverwrite.isNull())
-  {
-    repaint(rectToOverwrite);
-  }
-
-  if (!doesImageContainPoint(mousePosition))
-  {
-    rectToOverwrite.setWidth(0);
-    rectToOverwrite.setHeight(0);
-    return;
-  }
-
-  if (event->buttons() & Qt::LeftButton)
-  {
-    imageModel->drawOnSelectedLayer(mousePosition);
-  }
-
-  // TODO: get hardcoded brush sizes from image model instead, later use a brush class
-  const auto screenRect = QRect((mousePosition.x() - 1) * scale, (mousePosition.y() - 1) * scale, 3 * scale, 3 * scale);
-  repaint(screenRect);
-  
-  rectToOverwrite = screenRect;
+  mousePosition = screenToImagePoint(event->localPos());
+  isLeftMouseButtonDown = event->buttons() & Qt::LeftButton;
+  update();
 }
 
 void Image::leaveEvent(QEvent* event)
 {
-  auto mouseEvent = QMouseEvent(QEvent::MouseMove, QPointF(-1.0f, -1.0f), Qt::NoButton, Qt::NoButton, Qt::NoModifier);
-  mouseMoveEvent(&mouseEvent);
+  mousePosition.setX(-1);
+  mousePosition.setY(-1);
+  update();
 }
 
 void Image::paintEvent(QPaintEvent* event)
 {
   QPainter painter(this);
 
-  // the rect uses on-screen pixel coordinates, so we need to convert it to image pixel coordinates
-  // and since we could be seeing parts of image pixels, we need to include any border image pixels
   QRectF screenRect = event->rect();
 
   // divide the screen rect by scale to get image pixel coordinates
@@ -75,6 +57,7 @@ void Image::paintEvent(QPaintEvent* event)
   screenRect.setHeight(screenRect.height() * inverseScale);
 
   // align the rect to include potential border image pixels
+  // that may have been partially covered by the screen rect
   const auto sourceRect = screenRect.toAlignedRect();
   const auto targetRect = QRect(sourceRect.x() * scale, sourceRect.y() * scale, sourceRect.width() * scale, sourceRect.height() * scale);
 
@@ -111,7 +94,9 @@ void Image::paintEvent(QPaintEvent* event)
     const auto screenMousePosition = QPoint(mousePosition.x() * scale, mousePosition.y() * scale);
     if (targetRect.contains(screenMousePosition))
     {
-      painter.fillRect(QRect(screenMousePosition.x(), screenMousePosition.y(), scale, scale), imageModel->getPaletteColorAtIndex(imageModel->getSelectedPaletteColorIndex()));
+      const auto target = QRect(screenMousePosition.x(), screenMousePosition.y(), brushModel->getWidth() * scale, brushModel->getHeight() * scale);
+      const auto source = QRect(0, 0, brushModel->getWidth(), brushModel->getHeight());
+      painter.drawImage(target, *brushModel->getBrushImage(), source, Qt::ImageConversionFlag::NoFormatConversion);
     }
   }
 
@@ -135,6 +120,31 @@ void Image::paintEvent(QPaintEvent* event)
   }
 }
 
+void Image::update()
+{
+  if (!rectToOverwrite.isNull())
+  {
+    repaint(rectToOverwrite);
+  }
+
+  if (!doesImageContainPoint(mousePosition))
+  {
+    rectToOverwrite.setWidth(0);
+    rectToOverwrite.setHeight(0);
+    return;
+  }
+
+  if (isLeftMouseButtonDown)
+  {
+    imageModel->drawOnSelectedLayer(mousePosition);
+  }
+
+  const auto screenRect = QRect(mousePosition.x() * scale, mousePosition.y() * scale, brushModel->getWidth() * scale, brushModel->getHeight() * scale);
+  repaint(screenRect);
+
+  rectToOverwrite = screenRect;
+}
+
 void Image::setScale(unsigned int scale)
 {
   this->scale = scale;
@@ -142,7 +152,7 @@ void Image::setScale(unsigned int scale)
   setFixedSize(imageModel->getWidth() * scale, imageModel->getHeight() * scale);
 }
 
-QPoint Image::ScreenToImagePoint(const QPointF point) const
+QPoint Image::screenToImagePoint(const QPointF point) const
 {
   return QPoint(point.x() * inverseScale, point.y() * inverseScale);
 }

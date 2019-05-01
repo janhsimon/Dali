@@ -1,14 +1,15 @@
 #include "TabArea.hpp"
 
-TabArea::TabArea(QWidget* parent) :
-  QTabWidget(parent)
+TabArea::TabArea(const BrushModel* brushModel, QWidget* parent) :
+  QTabWidget(parent),
+  brushModel(brushModel)
 {
-  //newImageTab("Untitled.dlp", 128u, 128u);
+  //newImageTab("Untitled.dali", 128u, 128u);
 }
 
 void TabArea::newImageTab(const QString& title, unsigned int width, unsigned int height)
 {
-  setCurrentIndex(addTab(new Tab(width, height, this), title));
+  setCurrentIndex(addTab(new Tab(brushModel, width, height, this), title));
 }
 
 void TabArea::closeCurrentImageTab()
@@ -33,12 +34,10 @@ void TabArea::closeAllImageTabs()
 
 Image* TabArea::getCurrentImage() const
 {
-  const auto currentTab = static_cast<Tab*>(currentWidget());
-
-  if (!currentTab)
+  if (const auto currentTab = currentWidget(); currentTab)
   {
-    return nullptr;
+    return static_cast<Tab*>(currentTab)->getImage();
   }
   
-  return currentTab->getImage();
+  return nullptr;
 }
