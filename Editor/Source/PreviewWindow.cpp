@@ -20,9 +20,7 @@ PreviewWindow::PreviewWindow(const TabArea* tabArea, QWidget* parent) :
 
   connect(tabArea, &TabArea::currentChanged, this, [&]()
   {
-    const auto currentImage = this->tabArea->getCurrentImage();
-
-    if (currentImage)
+    if (const auto currentImage = this->tabArea->getCurrentImage(); currentImage)
     {
       const auto currentImageModel = currentImage->getImageModel();
       setFixedSize(currentImageModel->getWidth(), currentImageModel->getHeight());

@@ -7,7 +7,7 @@ class ToolSettingsBar : public QWidget
   Q_OBJECT
 
 public:
-  ToolSettingsBar(QWidget* parent = nullptr);
+  ToolSettingsBar(const TabArea* tabArea, QWidget* parent = nullptr);
 
   BrushModel* getBrushModel() const { return brush->getBrushModel(); }
 

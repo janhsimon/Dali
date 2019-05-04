@@ -1,6 +1,7 @@
 #include "Brush.hpp"
 
-Brush::Brush(QWidget* parent) :
+Brush::Brush(const TabArea* tabArea, QWidget* parent) :
+  tabArea(tabArea),
   QWidget(parent)
 {
   setFixedSize(96, 96);
@@ -11,6 +12,14 @@ Brush::Brush(QWidget* parent) :
   inverseScaleY = static_cast<float>(height()) / static_cast<float>(brushModel->getHeight());
 
   connect(brushModel.get(), &BrushModel::colorChanged, this, [&]() { repaint(); });
+
+  connect(tabArea, &QTabWidget::currentChanged, this, [&]()
+  {
+    if (const auto currentImage = this->tabArea->getCurrentImage(); currentImage)
+    {
+      brushModel->setColor(currentImage->getImageModel()->getSelectedPaletteColor());
+    }
+  });
 }
 
 void Brush::mousePressEvent(QMouseEvent *event)

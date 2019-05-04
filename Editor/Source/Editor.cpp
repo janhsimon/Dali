@@ -7,20 +7,20 @@ Editor::Editor(QWidget* parent) :
   QMainWindow(parent)
 {
   const auto rootWidget = new QWidget(this);
+
+  tabArea = std::make_unique<TabArea>(this);
+  toolSettingsBar = std::make_unique<ToolSettingsBar>(tabArea.get(), rootWidget);
+  menuBar = std::make_unique<MenuBar>(tabArea.get(), toolSettingsBar->getBrushModel(), this);
+
   const auto rootLayout = new QVBoxLayout();
   rootLayout->setContentsMargins(0, 0, 0, 0);
   
-  toolSettingsBar = std::make_unique<ToolSettingsBar>(rootWidget);
   rootLayout->addWidget(toolSettingsBar.get());
 
   const auto mainLayout = new QHBoxLayout();
   mainLayout->setContentsMargins(0, 0, 0, 0);
-
   mainLayout->addWidget(new ToolBar(rootWidget));
-
-  tabArea = std::make_unique<TabArea>(toolSettingsBar->getBrushModel(), this);
   mainLayout->addWidget(tabArea.get());
-
   rootLayout->addLayout(mainLayout);
   
   const auto statusBar = new QStatusBar(this);
@@ -32,7 +32,6 @@ Editor::Editor(QWidget* parent) :
   rootWidget->setLayout(rootLayout);
   setCentralWidget(rootWidget);
 
-  menuBar = std::make_unique<MenuBar>(tabArea.get(), this);
   setMenuBar(menuBar.get());
 
   const auto previewWindow = new PreviewWindow(tabArea.get(), this);

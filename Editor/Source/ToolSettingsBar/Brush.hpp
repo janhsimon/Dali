@@ -1,13 +1,14 @@
 #pragma once
 
 #include "../Models/BrushModel.hpp"
+#include "../TabArea/TabArea.hpp"
 
 class Brush : public QWidget
 {
   Q_OBJECT
 
 public:
-  Brush(QWidget* parent = nullptr);
+  Brush(const TabArea* tabArea, QWidget* parent = nullptr);
 
   BrushModel* getBrushModel() const { return brushModel.get(); }
 
@@ -22,6 +23,7 @@ private:
   static constexpr auto BACKGROUND_COLOR_BRIGHT = qRgb(100, 100, 100);
   static constexpr auto BACKGROUND_COLOR_DARK = qRgb(88, 88, 88);
 
+  const TabArea* tabArea;
   std::unique_ptr<BrushModel> brushModel;
   float inverseScaleX, inverseScaleY; // precalculated for performance
 

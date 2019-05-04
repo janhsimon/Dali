@@ -1,13 +1,12 @@
 #include "TabArea.hpp"
 
-TabArea::TabArea(BrushModel* brushModel, QWidget* parent) :
-  QTabWidget(parent),
-  brushModel(brushModel)
+TabArea::TabArea(QWidget* parent) :
+  QTabWidget(parent)
 {
   //newImageTab("Untitled.dali", 128u, 128u);
 }
 
-void TabArea::newImageTab(const QString& title, unsigned int width, unsigned int height)
+void TabArea::newImageTab(BrushModel* brushModel, const QString& title, unsigned int width, unsigned int height)
 {
   setCurrentIndex(addTab(new Tab(brushModel, width, height, this), title));
 }

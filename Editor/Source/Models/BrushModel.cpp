@@ -29,7 +29,6 @@ void BrushModel::setBrushAt(const int x, const int y, const bool value)
   assert(x >= 0 && x < width);
   assert(y >= 0 && y < height);
   brush->scanLine(y)[x] = static_cast<int>(value);
-
   //emit brushChanged();
 }
 
