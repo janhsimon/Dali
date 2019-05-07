@@ -7,11 +7,11 @@ class MenuBar : public QMenuBar
   Q_OBJECT
 
 public:
-  MenuBar(TabArea* tabArea, BrushModel* brushModel, QWidget* parent = nullptr);
+  MenuBar(TabArea* tabArea, const ToolModel* toolModel, QWidget* parent = nullptr);
 
 private:
   TabArea* tabArea;
-  BrushModel* brushModel;
+  const ToolModel* toolModel;
 
   QAction* zoomInAction;
   QAction* zoomOutAction;

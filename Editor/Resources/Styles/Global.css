@@ -1,0 +1,99 @@
+QWidget
+{
+  color: white;
+  font-size: 9pt;
+}
+
+QMainWindow
+{
+  background-color: #252525;
+}
+
+QPushButton
+{
+  background-color: #333333;
+  border: none;
+}
+
+QPushButton:hover
+{
+  background-color: #454545;
+}
+
+QPushButton:pressed
+{
+  background-color: #383838;
+}
+
+QPushButton:checked
+{
+  background-color: #454545;
+}
+
+QTabWidget::pane
+{
+  border: 0px;
+  background: #1e1e1e;
+}
+
+QTabBar::tab
+{
+  background: #2d2d2d;
+  color: white;
+  min-width: 195px;
+  padding: 10px;
+}
+
+QTabBar::tab:selected
+{
+  background: #1e1e1e;
+}
+
+QTabBar::close-button:hover
+{
+  background: #454545;
+}
+
+QTabBar::close-button:pressed
+{
+  background: #333333;
+}
+
+QListWidget
+{
+  background-color: #242424;
+  border: none;
+  padding: 2px;
+}
+
+QScrollBar:horizontal
+{
+  border: 2px solid grey;
+  background: #32CC99;
+  height: 15px;
+  margin: 0px 20px 0 20px;
+}
+
+QScrollBar::handle:horizontal
+{
+  background: white;
+  min-width: 20px;
+}
+
+QScrollBar::add-line:horizontal
+{
+  border: 2px solid grey;
+  background: #32CC99;
+  width: 20px;
+  subcontrol-position: right;
+  subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal
+{
+  border: 2px solid grey;
+  background: #32CC99;
+  width: 20px;
+  subcontrol-position: left;
+  subcontrol-origin: margin;
+}

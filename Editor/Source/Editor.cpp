@@ -10,23 +10,21 @@ Editor::Editor(QWidget* parent) :
 
   tabArea = std::make_unique<TabArea>(this);
   toolSettingsBar = std::make_unique<ToolSettingsBar>(tabArea.get(), rootWidget);
-  menuBar = std::make_unique<MenuBar>(tabArea.get(), toolSettingsBar->getBrushModel(), this);
+  menuBar = std::make_unique<MenuBar>(tabArea.get(), toolSettingsBar->getToolModel(), this);
 
   const auto rootLayout = new QVBoxLayout();
-  rootLayout->setContentsMargins(0, 0, 0, 0);
   
   rootLayout->addWidget(toolSettingsBar.get());
 
   const auto mainLayout = new QHBoxLayout();
-  mainLayout->setContentsMargins(0, 0, 0, 0);
-  mainLayout->addWidget(new ToolBar(rootWidget));
+  mainLayout->addWidget(new ToolBar(toolSettingsBar->getToolModel(), rootWidget));
   mainLayout->addWidget(tabArea.get());
   rootLayout->addLayout(mainLayout);
   
   const auto statusBar = new QStatusBar(this);
   statusBar->addWidget(new QLabel("This is the status bar."));
+  statusBar->addWidget(new QLabel("And this is a second element."));
   statusBar->setMinimumHeight(24);
-  statusBar->setStyleSheet("background-color: #0880FF");
   setStatusBar(statusBar);
 
   rootWidget->setLayout(rootLayout);
@@ -42,12 +40,29 @@ Editor::Editor(QWidget* parent) :
   setMinimumSize(1024, 768);
 }
 
+QString mergeStylesheets(const QString& directory)
+{
+  QByteArray mergedStylesheet;
+
+  const auto filenames = QDir(directory).entryList(QStringList() << "*.css", QDir::Files);
+  for (const auto& filename : filenames)
+  {
+    QFile stylesheet(directory + "/" + filename);
+    if (stylesheet.open(QFile::ReadOnly))
+    {
+      mergedStylesheet += stylesheet.readAll();
+    }
+  }
+
+  return QLatin1String(mergedStylesheet);
+}
+
 int main(int argc, char* argv[])
 {
   QApplication application(argc, argv);
+  application.setStyleSheet(mergeStylesheets(":/Styles"));
 
   Editor editor;
   editor.show/*Maximized*/();
-
   return application.exec();
 }

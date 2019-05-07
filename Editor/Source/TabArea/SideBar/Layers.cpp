@@ -4,10 +4,7 @@ Layers::Layers(ImageModel* imageModel, QWidget* parent) :
   QWidget(parent),
   imageModel(imageModel)
 {
-  setStyleSheet("background-color: #FF0080");
-
   const auto rootLayout = new QGridLayout();
-  rootLayout->setContentsMargins(0, 0, 0, 0);
 
   layerList = std::make_unique<QListWidget>(this);
   layerList->addItem("Layer 1");

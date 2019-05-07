@@ -3,12 +3,11 @@
 TabArea::TabArea(QWidget* parent) :
   QTabWidget(parent)
 {
-  //newImageTab("Untitled.dali", 128u, 128u);
 }
 
-void TabArea::newImageTab(BrushModel* brushModel, const QString& title, unsigned int width, unsigned int height)
+void TabArea::newImageTab(const ToolModel* toolModel, const QString& title, unsigned int width, unsigned int height)
 {
-  setCurrentIndex(addTab(new Tab(brushModel, width, height, this), title));
+  setCurrentIndex(addTab(new Tab(toolModel, width, height, this), title));
 }
 
 void TabArea::closeCurrentImageTab()

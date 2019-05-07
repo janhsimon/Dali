@@ -1,23 +1,22 @@
 #include "Brush.hpp"
 
-Brush::Brush(const TabArea* tabArea, QWidget* parent) :
+Brush::Brush(const TabArea* tabArea, BrushModel* brushModel, QWidget* parent) :
   tabArea(tabArea),
+  brushModel(brushModel),
   QWidget(parent)
 {
   setFixedSize(96, 96);
 
-  brushModel = std::make_unique<BrushModel>();
-
   inverseScaleX = static_cast<float>(width()) / static_cast<float>(brushModel->getWidth());
   inverseScaleY = static_cast<float>(height()) / static_cast<float>(brushModel->getHeight());
 
-  connect(brushModel.get(), &BrushModel::colorChanged, this, [&]() { repaint(); });
+  connect(brushModel, &BrushModel::colorChanged, this, [&]() { repaint(); });
 
   connect(tabArea, &QTabWidget::currentChanged, this, [&]()
   {
     if (const auto currentImage = this->tabArea->getCurrentImage(); currentImage)
     {
-      brushModel->setColor(currentImage->getImageModel()->getSelectedPaletteColor());
+      this->brushModel->setColor(currentImage->getImageModel()->getSelectedPaletteColor());
     }
   });
 }

@@ -1,9 +1,11 @@
 #include "ImageArea.hpp"
 
-ImageArea::ImageArea(BrushModel* brushModel, unsigned int width, unsigned int height, QWidget* parent) :
+ImageArea::ImageArea(const ToolModel* toolModel, unsigned int width, unsigned int height, QWidget* parent) :
   QScrollArea(parent)
 {
-  image = std::make_unique<Image>(brushModel, width, height, this);
+  setObjectName("ImageArea");
+
+  image = std::make_unique<Image>(toolModel, width, height, this);
   setWidget(image.get());
   setAlignment(Qt::AlignCenter);
 }

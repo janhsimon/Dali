@@ -1,12 +1,12 @@
 #include "MenuBar.hpp"
 
-MenuBar::MenuBar(TabArea* tabArea, BrushModel* brushModel, QWidget* parent) :
+MenuBar::MenuBar(TabArea* tabArea, const ToolModel* toolModel, QWidget* parent) :
   QMenuBar(parent),
   tabArea(tabArea),
-  brushModel(brushModel)
+  toolModel(toolModel)
 {
   const auto fileMenu = addMenu("File");
-  fileMenu->addAction("New Project...", [&]() { this->tabArea->newImageTab(this->brushModel, "Untitled.dali", 128u, 128u); }, Qt::Modifier::CTRL + Qt::Key::Key_N);
+  fileMenu->addAction("New Project...", [&]() { this->tabArea->newImageTab(this->toolModel, "Untitled.dali", 128u, 128u); }, Qt::Modifier::CTRL + Qt::Key::Key_N);
 
   fileMenu->addAction("Open Project...");
   const auto openRecentMenu = fileMenu->addMenu("Open Recent Projects");

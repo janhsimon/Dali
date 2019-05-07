@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MenuBar.hpp"
-#include "ToolBar.hpp"
+#include "ToolBar/ToolBar.hpp"
 #include "ToolSettingsBar/ToolSettingsBar.hpp"
 
 class Editor : public QMainWindow

@@ -1,5 +1,16 @@
 <RCC>
     <qresource prefix="/">
-        <file>Icons/Icon.svg</file>
+        <file>Icons/Brush.svg</file>
+        <file>Icons/Circle.svg</file>
+        <file>Icons/ColorPicker.svg</file>
+        <file>Icons/Fill.svg</file>
+        <file>Icons/Line.svg</file>
+        <file>Icons/Settings.svg</file>
+        <file>Icons/Square.svg</file>
+        <file>Styles/Global.css</file>
+        <file>Styles/MenuBar.css</file>
+        <file>Styles/ImageArea.css</file>
+        <file>Styles/SideBar.css</file>
+        <file>Styles/StatusBar.css</file>
     </qresource>
 </RCC>

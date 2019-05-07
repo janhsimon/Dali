@@ -2,8 +2,8 @@
 
 #include <cassert>
 
-ImageModel::ImageModel(BrushModel* brushModel, unsigned int width, unsigned int height) :
-  brushModel(brushModel),
+ImageModel::ImageModel(const ToolModel* toolModel, unsigned int width, unsigned int height) :
+  toolModel(toolModel),
   width(width),
   height(height)
 {
@@ -17,10 +17,10 @@ ImageModel::ImageModel(BrushModel* brushModel, unsigned int width, unsigned int 
 
   selectedPaletteColorIndex = 0u;
 
-  connect(this, &ImageModel::selectedPaletteColorIndexChanged, this, [&]() { this->brushModel->setColor(getSelectedPaletteColor()); });
-  connect(this, &ImageModel::paletteChanged, this, [&]() { this->brushModel->setColor(getSelectedPaletteColor()); });
+  connect(this, &ImageModel::selectedPaletteColorIndexChanged, this, [&]() { this->toolModel->getBrushModel()->setColor(getSelectedPaletteColor()); });
+  connect(this, &ImageModel::paletteChanged, this, [&]() { this->toolModel->getBrushModel()->setColor(getSelectedPaletteColor()); });
 
-  brushModel->setColor(getSelectedPaletteColor());
+  toolModel->getBrushModel()->setColor(getSelectedPaletteColor());
 
   addLayer();
   addLayer();
@@ -119,6 +119,8 @@ void ImageModel::setSelectedLayerIndex(const unsigned int selectedLayerIndex)
 
 void ImageModel::drawOnSelectedLayer(const QPoint& point)
 {
+  const auto brushModel = toolModel->getBrushModel();
+
   for (auto y = 0; y < brushModel->getHeight(); ++y)
   {
     for (auto x = 0; x < brushModel->getWidth(); ++x)

@@ -1,13 +1,14 @@
 #pragma once
 
 #include "../../Models/ImageModel.hpp"
+#include "../../Models/ToolModel.hpp"
 
 class Image : public QWidget
 {
   Q_OBJECT
 
 public:
-  Image(BrushModel* brushModel, unsigned int width, unsigned int height, QWidget* parent = nullptr);
+  Image(const ToolModel* toolModel, unsigned int width, unsigned int height, QWidget* parent = nullptr);
 
   void zoomIn() { setScale(std::min(++scale, 128u)); }
   void zoomOut() { setScale(std::max(--scale, 1u)); }
@@ -29,7 +30,7 @@ private:
   static constexpr auto BACKGROUND_COLOR_BRIGHT = qRgb(100, 100, 100);
   static constexpr auto BACKGROUND_COLOR_DARK = qRgb(88, 88, 88);
 
-  BrushModel* brushModel;
+  const ToolModel* toolModel;
   std::unique_ptr<ImageModel> imageModel;
   unsigned int scale;
   float inverseScale; // precalculated for performance
@@ -39,6 +40,7 @@ private:
   QRect rectToOverwrite; // in screen space
 
   void update();
+  void updateBrush();
 
   void setScale(unsigned int scale);
 

@@ -1,14 +1,14 @@
 #include "Image.hpp"
 
-Image::Image(BrushModel* brushModel, unsigned int width, unsigned int height, QWidget* parent) :
+Image::Image(const ToolModel* toolModel, unsigned int width, unsigned int height, QWidget* parent) :
   QWidget(parent),
-  brushModel(brushModel),
+  toolModel(toolModel),
   drawGrid(false),
   mousePosition(-1, -1),
   isLeftMouseButtonDown(false),
   rectToOverwrite(0, 0, 0, 0)
 {
-  imageModel = std::make_unique<ImageModel>(brushModel, width, height);
+  imageModel = std::make_unique<ImageModel>(toolModel, width, height);
 
   setScale(4);
 
@@ -94,6 +94,7 @@ void Image::paintEvent(QPaintEvent* event)
     const auto screenMousePosition = QPoint(mousePosition.x() * scale, mousePosition.y() * scale);
     if (targetRect.contains(screenMousePosition))
     {
+      const auto brushModel = toolModel->getBrushModel();
       const auto target = QRect(screenMousePosition.x(), screenMousePosition.y(), brushModel->getWidth() * scale, brushModel->getHeight() * scale);
       const auto source = QRect(0, 0, brushModel->getWidth(), brushModel->getHeight());
       painter.drawImage(target, *brushModel->getBrushImage(), source, Qt::ImageConversionFlag::NoFormatConversion);
@@ -122,6 +123,14 @@ void Image::paintEvent(QPaintEvent* event)
 
 void Image::update()
 {
+  if (toolModel->getSelectedTool() == Tool::BRUSH)
+  {
+    updateBrush();
+  }
+}
+
+void Image::updateBrush()
+{
   if (!rectToOverwrite.isNull())
   {
     repaint(rectToOverwrite);
@@ -139,6 +148,7 @@ void Image::update()
     imageModel->drawOnSelectedLayer(mousePosition);
   }
 
+  const auto brushModel = toolModel->getBrushModel();
   const auto screenRect = QRect(mousePosition.x() * scale, mousePosition.y() * scale, brushModel->getWidth() * scale, brushModel->getHeight() * scale);
   repaint(screenRect);
 
