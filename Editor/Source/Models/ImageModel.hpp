@@ -2,6 +2,12 @@
 
 #include "ToolModel.hpp"
 
+struct Layer
+{
+  std::unique_ptr<QImage> image;
+  bool visible;
+};
+
 class ImageModel : public QObject
 {
   Q_OBJECT
@@ -23,6 +29,8 @@ public:
   QImage* getLayerImage(const unsigned int layerIndex) const;
   unsigned int getSelectedLayerIndex() const { return selectedLayerIndex; };
   void setSelectedLayerIndex(const unsigned int selectedLayerIndex);
+  bool getLayerVisible(const unsigned layerIndex) const;
+  void setLayerVisible(const unsigned layerIndex, const bool visible);
 
   int getWidth() const { return width; }
   int getHeight() const { return height; }
@@ -40,7 +48,7 @@ private:
   QVector<QRgb> paletteColors;
   unsigned int selectedPaletteColorIndex;
 
-  std::vector<std::unique_ptr<QImage>> layers;
+  std::vector<std::unique_ptr<Layer>> layers;
   unsigned int selectedLayerIndex; // not including internal first palette color
 
   int width, height;

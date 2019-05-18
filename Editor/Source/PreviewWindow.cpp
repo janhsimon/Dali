@@ -70,6 +70,10 @@ void PreviewWindow::paintEvent(QPaintEvent* event)
   {
     // avoid issues with unsigned integer overflow
     const auto layerIndex = i - 1u;
-    painter.drawImage(rect, *currentImageModel->getLayerImage(layerIndex), rect, Qt::NoFormatConversion);
+
+    if (currentImageModel->getLayerVisible(layerIndex))
+    {
+      painter.drawImage(rect, *currentImageModel->getLayerImage(layerIndex), rect, Qt::NoFormatConversion);
+    }
   }
 }

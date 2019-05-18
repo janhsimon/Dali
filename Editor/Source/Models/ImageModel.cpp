@@ -23,7 +23,6 @@ ImageModel::ImageModel(const ToolModel* toolModel, unsigned int width, unsigned 
   toolModel->getBrushModel()->setColor(getSelectedPaletteColor());
 
   addLayer();
-  addLayer();
 }
 
 QRgb ImageModel::getPaletteColorAtIndex(unsigned int index) const
@@ -43,7 +42,7 @@ void ImageModel::setPaletteColorAtIndex(const unsigned int index, const QRgb col
 
   for (auto& layer : layers)
   {
-    layer->setColorTable(paletteColors);
+    layer->image->setColorTable(paletteColors);
   }
 
   emit paletteChanged();
@@ -68,11 +67,14 @@ void ImageModel::setSelectedPaletteColorIndex(const unsigned int selectedPalette
 
 void ImageModel::addLayer()
 {
-  layers.push_back(std::make_unique<QImage>(width, height, QImage::Format::Format_Indexed8));
-  layers.back()->setColorTable(paletteColors);
-
+  auto newLayer = new Layer;
+  newLayer->image = std::make_unique<QImage>(width, height, QImage::Format::Format_Indexed8);
+  
   // set all indices to the internal first palette color (fully transparent)
-  memset(layers.back()->bits(), 0, layers.back()->sizeInBytes());
+  newLayer->image->setColorTable(paletteColors);
+  memset(newLayer->image->bits(), 0, newLayer->image->sizeInBytes());
+
+  layers.push_back(std::unique_ptr<Layer>(newLayer));
 
   setSelectedLayerIndex(static_cast<unsigned int>(layers.size()) - 1u);
 
@@ -108,7 +110,7 @@ void ImageModel::changeLayerOrder(unsigned int fromIndex, unsigned int toIndex)
 QImage* ImageModel::getLayerImage(const unsigned int layerIndex) const
 {
   assert(layerIndex < layers.size());
-  return layers[layerIndex].get();
+  return layers[layerIndex]->image.get();
 }
 
 void ImageModel::setSelectedLayerIndex(const unsigned int selectedLayerIndex)
@@ -117,8 +119,29 @@ void ImageModel::setSelectedLayerIndex(const unsigned int selectedLayerIndex)
   this->selectedLayerIndex = selectedLayerIndex;
 }
 
+bool ImageModel::getLayerVisible(const unsigned layerIndex) const
+{
+  assert(layerIndex < layers.size());
+  return layers[layerIndex]->visible;
+}
+
+void ImageModel::setLayerVisible(const unsigned layerIndex, const bool visible)
+{
+  assert(layerIndex < layers.size());
+  layers[layerIndex]->visible = visible;
+
+  // emit the layersChanged signal as showing or hiding a layer is likely to cause a change in the image
+  emit layersChanged();
+}
+
 void ImageModel::drawOnSelectedLayer(const QPoint& point)
 {
+  assert(selectedLayerIndex < layers.size());
+  if (!layers[selectedLayerIndex]->visible)
+  {
+    return;
+  }
+
   const auto brushModel = toolModel->getBrushModel();
 
   for (auto y = 0; y < brushModel->getHeight(); ++y)
@@ -139,8 +162,7 @@ void ImageModel::drawOnSelectedLayer(const QPoint& point)
         const auto adjustedPaletteColorIndex = getSelectedPaletteColorIndex() + 1u;
         assert(adjustedPaletteColorIndex < static_cast<unsigned int>(paletteColors.size()));
 
-        assert(selectedLayerIndex < layers.size());
-        layers[selectedLayerIndex]->scanLine(j)[i] = adjustedPaletteColorIndex;
+        layers[selectedLayerIndex]->image->scanLine(j)[i] = adjustedPaletteColorIndex;
       }
     }
   }

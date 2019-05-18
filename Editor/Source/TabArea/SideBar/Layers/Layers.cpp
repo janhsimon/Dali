@@ -5,11 +5,10 @@ Layers::Layers(ImageModel* imageModel, QWidget* parent) :
   imageModel(imageModel)
 {
   const auto rootLayout = new QGridLayout();
+  rootLayout->setContentsMargins(2, 2, 2, 2);
 
-  layerList = std::make_unique<QListWidget>(this);
-  layerList->addItem("Layer 1");
-  layerList->setDragDropMode(QAbstractItemView::InternalMove); // allow re-ordering of list via drag-and-drop
-  layerList->setEditTriggers(layerList->editTriggers() | QAbstractItemView::SelectedClicked | QAbstractItemView::EditKeyPressed); // allow renaming of list items
+  layerList = std::make_unique<LayerList>(imageModel, this);
+  layerList->addLayer("Layer 1");
   rootLayout->addWidget(layerList.get(), 0, 0);
 
   const auto buttonBar = new QWidget(this);
@@ -34,21 +33,11 @@ Layers::Layers(ImageModel* imageModel, QWidget* parent) :
   rootLayout->addWidget(backgroundColorButton, 1, 1);
 
   setLayout(rootLayout);
-
-  connect(layerList.get(), &QListWidget::currentRowChanged, this, [&](int currentRow) { this->imageModel->setSelectedLayerIndex(currentRow); });
-  
-  connect(layerList.get()->model(), &QAbstractItemModel::rowsMoved, this, [&](const QModelIndex&, int from, int, const QModelIndex&, int to)
-  {
-    this->imageModel->changeLayerOrder(from, to);
-
-    // make sure to update the selected layer index of the model after changing the layer order
-    this->imageModel->setSelectedLayerIndex(layerList->currentRow());
-  });
   
   connect(addLayerButton, &QPushButton::clicked, this, [&]()
   {
     this->imageModel->addLayer();
-    layerList->addItem("Layer " + QString::number(layerList->count() + 1));
+    layerList->addLayer("Layer " + QString::number(layerList->count() + 1));
     
     layerList->setItemSelected(layerList->item(layerList->count() - 1), true);
   });

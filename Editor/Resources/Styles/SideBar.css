@@ -2,3 +2,34 @@
 {
   background-color: #333333;
 }
+
+LayerListItem QLineEdit
+{
+  background: transparent;
+}
+
+LayerListItem QPushButton
+{
+  background: transparent;
+}
+
+LayerListItem QPushButton:hover
+{
+  background: transparent;
+}
+
+#LayerListItem QCheckBox::indicator
+{
+  width: 16px;
+  height: 16px;
+}
+
+#LayerListItem QCheckBox::indicator:unchecked
+{
+  image: url(:/Icons/Invisible.svg);
+}
+
+#LayerListItem QCheckBox::indicator:checked
+{
+  image: url(:/Icons/Visible.svg);
+}

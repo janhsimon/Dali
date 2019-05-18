@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../Models/ImageModel.hpp"
+#include "LayerList.hpp"
 
 class Layers : public QWidget
 {
@@ -10,9 +10,8 @@ public:
   Layers(ImageModel* imageModel, QWidget* parent = nullptr);
 
 private:
-  std::unique_ptr<QListWidget> layerList;
+  ImageModel* imageModel;
+  std::unique_ptr<LayerList> layerList;
   QPushButton* addLayerButton;
   QPushButton* removeLayerButton;
-
-  ImageModel* imageModel;
 };

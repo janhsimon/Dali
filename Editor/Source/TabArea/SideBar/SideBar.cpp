@@ -1,6 +1,6 @@
-#include "Layers.hpp"
 #include "Palette.hpp"
 #include "SideBar.hpp"
+#include "Layers/Layers.hpp"
 
 SideBar::SideBar(ImageModel* imageModel, QWidget* parent) :
   QWidget(parent)
