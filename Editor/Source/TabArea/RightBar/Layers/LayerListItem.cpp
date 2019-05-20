@@ -9,19 +9,19 @@ LayerListItem::LayerListItem(const QString& layerName, ImageModel* imageModel, Q
 {
   setObjectName("LayerListItem");
 
-  const auto rootLayout = new QHBoxLayout();
-  rootLayout->setContentsMargins(2, 2, 2, 2);
+  const auto layout = new QHBoxLayout();
+  layout->setContentsMargins(2, 2, 2, 2);
 
   const auto iconLabel = new QLabel(this);
   iconLabel->setPixmap(QIcon(":Icons/Layer.svg").pixmap(16, 16));
-  rootLayout->addWidget(iconLabel);
+  layout->addWidget(iconLabel);
 
   layerNameLineEdit = new QLineEdit(layerName, this);
   layerNameLineEdit->setFrame(false);
   layerNameLineEdit->setEnabled(false);
-  rootLayout->addWidget(layerNameLineEdit);
+  layout->addWidget(layerNameLineEdit);
 
-  rootLayout->addStretch();
+  layout->addStretch();
 
   const auto buttonsLayout = new QHBoxLayout();
   buttonsLayout->setContentsMargins(0, 0, 0, 0);
@@ -35,9 +35,9 @@ LayerListItem::LayerListItem(const QString& layerName, ImageModel* imageModel, Q
   visibilityCheckbox->setChecked(true);
   buttonsLayout->addWidget(visibilityCheckbox);
 
-  rootLayout->addLayout(buttonsLayout);
+  layout->addLayout(buttonsLayout);
 
-  setLayout(rootLayout);
+  setLayout(layout);
 
   connect(layerNameLineEdit, &QLineEdit::editingFinished, this, [&]()
   {

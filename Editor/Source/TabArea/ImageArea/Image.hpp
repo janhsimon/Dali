@@ -8,15 +8,13 @@ class Image : public QWidget
   Q_OBJECT
 
 public:
-  Image(const ToolModel* toolModel, unsigned int width, unsigned int height, QWidget* parent = nullptr);
+  Image(ImageModel* imageModel, const ToolModel* toolModel, unsigned int width, unsigned int height, QWidget* parent = nullptr);
 
   void zoomIn() { setScale(std::min(++scale, 128u)); }
   void zoomOut() { setScale(std::max(--scale, 1u)); }
 
   const bool getDrawGrid() const { return drawGrid; }
   void setDrawGrid(bool drawGrid) { this->drawGrid = drawGrid; repaint(); }
-
-  ImageModel* getImageModel() const { return imageModel.get(); }
 
 protected:
   void mousePressEvent(QMouseEvent* event) override;
@@ -30,8 +28,10 @@ private:
   static constexpr auto BACKGROUND_COLOR_BRIGHT = qRgb(100, 100, 100);
   static constexpr auto BACKGROUND_COLOR_DARK = qRgb(88, 88, 88);
 
+  // non-owning
+  ImageModel* imageModel;
   const ToolModel* toolModel;
-  std::unique_ptr<ImageModel> imageModel;
+  
   unsigned int scale;
   float inverseScale; // precalculated for performance
   bool drawGrid;

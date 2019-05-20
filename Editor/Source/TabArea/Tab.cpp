@@ -1,14 +1,20 @@
 #include "Tab.hpp"
 #include "TabArea.hpp"
-#include "SideBar/SideBar.hpp"
 
-Tab::Tab(const ToolModel* toolModel, unsigned int width, unsigned int height, QWidget* parent) :
+Tab::Tab(unsigned int width, unsigned int height, QWidget* parent) :
   QWidget(parent)
 {
-  imageArea = std::make_unique<ImageArea>(toolModel, width, height, this);
+  toolModel = std::make_unique<ToolModel>();
+  imageModel = std::make_unique<ImageModel>(toolModel.get(), width, height);
+  
+  imageArea = new ImageArea(imageModel.get(), toolModel.get(), width, height, this);
+  leftBar = new LeftBar(imageModel.get(), toolModel.get(), this);
+  rightBar = new RightBar(imageModel.get(), this);
 
-  const auto rootLayout = new QHBoxLayout();
-  rootLayout->addWidget(new SideBar(getImage()->getImageModel(), this));
-  rootLayout->addWidget(imageArea.get());
-  setLayout(rootLayout);
+  const auto layout = new QHBoxLayout();
+  setLayout(layout);
+
+  layout->addWidget(leftBar);
+  layout->addWidget(imageArea);
+  layout->addWidget(rightBar);
 }

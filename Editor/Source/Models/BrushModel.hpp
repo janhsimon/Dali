@@ -22,7 +22,9 @@ signals:
   void colorChanged();
 
 private:
- QVector<QRgb> colors;
- std::unique_ptr<QImage> brush;
- int width, height;
+  // owning
+  std::unique_ptr<QImage> brush;
+  
+  QVector<QRgb> colors;
+  int width, height;
 };

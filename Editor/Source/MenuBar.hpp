@@ -7,12 +7,13 @@ class MenuBar : public QMenuBar
   Q_OBJECT
 
 public:
-  MenuBar(TabArea* tabArea, const ToolModel* toolModel, QWidget* parent = nullptr);
+  MenuBar(TabArea* tabArea, QWidget* parent = nullptr);
 
 private:
+  // non-owning
   TabArea* tabArea;
-  const ToolModel* toolModel;
 
+  // memory managed by Qt
   QAction* zoomInAction;
   QAction* zoomOutAction;
   QAction* showGridAction;

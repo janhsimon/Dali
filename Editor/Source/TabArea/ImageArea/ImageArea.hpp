@@ -7,10 +7,11 @@ class ImageArea : public QScrollArea
   Q_OBJECT
 
 public:
-  ImageArea(const ToolModel* toolModel, unsigned int width, unsigned int height, QWidget* parent = nullptr);
+  ImageArea(ImageModel* imageModel, const ToolModel* toolModel, unsigned int width, unsigned int height, QWidget* parent = nullptr);
 
-  Image* getImage() const { return image.get(); }
+  Image* getImage() const { return image; }
 
 private:
-  std::unique_ptr<Image> image;
+  // memory managed by Qt
+  Image* image;
 };

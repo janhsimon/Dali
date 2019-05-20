@@ -4,35 +4,35 @@ Layers::Layers(ImageModel* imageModel, QWidget* parent) :
   QWidget(parent),
   imageModel(imageModel)
 {
-  const auto rootLayout = new QGridLayout();
-  rootLayout->setContentsMargins(2, 2, 2, 2);
-
-  layerList = std::make_unique<LayerList>(imageModel, this);
+  layerList = new LayerList(imageModel, this);
   layerList->addLayer("Layer 1");
-  rootLayout->addWidget(layerList.get(), 0, 0);
 
   const auto buttonBar = new QWidget(this);
+
   const auto buttonBarLayout = new QVBoxLayout();
+  buttonBar->setLayout(buttonBarLayout);
 
   addLayerButton = new QPushButton("+", this);
   addLayerButton->setFixedSize(32, 32);
-  buttonBarLayout->addWidget(addLayerButton);
-
+  
   removeLayerButton = new QPushButton("-", this);
   removeLayerButton->setFixedSize(32, 32);
+
+  buttonBarLayout->addWidget(addLayerButton);
   buttonBarLayout->addWidget(removeLayerButton);
-
   buttonBarLayout->addStretch();
-  buttonBar->setLayout(buttonBarLayout);
-  rootLayout->addWidget(buttonBar, 0, 1);
-
-  rootLayout->addWidget(new QLabel("Background color:", this), 1, 0);
-
+  
   const auto backgroundColorButton = new QPushButton("...");
   backgroundColorButton->setFixedSize(32, 32);
-  rootLayout->addWidget(backgroundColorButton, 1, 1);
 
-  setLayout(rootLayout);
+  const auto layout = new QGridLayout();
+  setLayout(layout);
+
+  layout->setContentsMargins(2, 2, 2, 2);
+  layout->addWidget(layerList, 0, 0);
+  layout->addWidget(buttonBar, 0, 1);
+  layout->addWidget(new QLabel("Background color:", this), 1, 0);
+  layout->addWidget(backgroundColorButton, 1, 1);
   
   connect(addLayerButton, &QPushButton::clicked, this, [&]()
   {

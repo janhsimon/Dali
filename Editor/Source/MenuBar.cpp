@@ -1,12 +1,11 @@
 #include "MenuBar.hpp"
 
-MenuBar::MenuBar(TabArea* tabArea, const ToolModel* toolModel, QWidget* parent) :
+MenuBar::MenuBar(TabArea* tabArea, QWidget* parent) :
   QMenuBar(parent),
-  tabArea(tabArea),
-  toolModel(toolModel)
+  tabArea(tabArea)
 {
   const auto fileMenu = addMenu("File");
-  fileMenu->addAction("New Project...", [&]() { this->tabArea->newImageTab(this->toolModel, "Untitled.dali", 128u, 128u); }, Qt::Modifier::CTRL + Qt::Key::Key_N);
+  fileMenu->addAction("New Project...", [&]() { this->tabArea->newImageTab("Untitled.dali", 128u, 128u); }, Qt::Modifier::CTRL + Qt::Key::Key_N);
 
   fileMenu->addAction("Open Project...");
   const auto openRecentMenu = fileMenu->addMenu("Open Recent Projects");
@@ -28,7 +27,7 @@ MenuBar::MenuBar(TabArea* tabArea, const ToolModel* toolModel, QWidget* parent) 
   const auto currentImage = tabArea->getCurrentImage();
 
   zoomInAction = viewMenu->addAction("Zoom In", [&]() { if (const auto currentImage = this->tabArea->getCurrentImage(); currentImage) currentImage->zoomIn(); }, Qt::Key::Key_Plus);
-  zoomInAction->setEnabled(currentImage != nullptr);
+  zoomInAction->setEnabled(currentImage );
   
   zoomOutAction = viewMenu->addAction("Zoom Out", [&]() { if (const auto currentImage = this->tabArea->getCurrentImage(); currentImage) currentImage->zoomOut(); }, Qt::Key::Key_Minus);
   zoomOutAction->setEnabled(currentImage != nullptr);

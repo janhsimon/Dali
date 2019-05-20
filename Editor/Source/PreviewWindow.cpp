@@ -7,10 +7,9 @@ PreviewWindow::PreviewWindow(const TabArea* tabArea, QWidget* parent) :
   setWindowTitle("Preview");
   setWindowFlags(Qt::Tool | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
 
-  const auto currentImage = tabArea->getCurrentImage();
-  if (currentImage)
+  
+  if (const auto currentImageModel = tabArea->getCurrentImageModel(); currentImageModel)
   {
-    const auto currentImageModel = currentImage->getImageModel();
     setFixedSize(currentImageModel->getWidth(), currentImageModel->getHeight());
   }
   else
@@ -20,9 +19,8 @@ PreviewWindow::PreviewWindow(const TabArea* tabArea, QWidget* parent) :
 
   connect(tabArea, &TabArea::currentChanged, this, [&]()
   {
-    if (const auto currentImage = this->tabArea->getCurrentImage(); currentImage)
+    if (const auto currentImageModel = this->tabArea->getCurrentImageModel(); currentImageModel)
     {
-      const auto currentImageModel = currentImage->getImageModel();
       setFixedSize(currentImageModel->getWidth(), currentImageModel->getHeight());
 
       connect(currentImageModel, &ImageModel::paletteChanged, this, [&]() { repaint(); });
@@ -36,9 +34,9 @@ PreviewWindow::PreviewWindow(const TabArea* tabArea, QWidget* parent) :
 
 void PreviewWindow::paintEvent(QPaintEvent* event)
 {
-  const auto currentImage = tabArea->getCurrentImage();
+  const auto currentImageModel = tabArea->getCurrentImageModel();
 
-  if (!currentImage)
+  if (!currentImageModel)
   {
     return;
   }
@@ -64,7 +62,6 @@ void PreviewWindow::paintEvent(QPaintEvent* event)
     }
   }
 
-  const auto currentImageModel = currentImage->getImageModel();
   for (auto i = currentImageModel->getLayerCount(); i > 0u; --i)
   // reverse-iterate through layers to draw the bottom layer first
   {

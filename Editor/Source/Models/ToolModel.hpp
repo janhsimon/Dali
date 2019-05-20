@@ -28,6 +28,8 @@ signals:
   void toolChanged(Tool tool);
 
 private:
+  // owning
   std::unique_ptr<BrushModel> brushModel;
+
   Tool selectedTool;
 };

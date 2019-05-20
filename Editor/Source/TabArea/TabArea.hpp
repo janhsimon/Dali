@@ -9,9 +9,11 @@ class TabArea : public QTabWidget
 public:
   TabArea(QWidget* parent = nullptr);
 
-  void newImageTab(const ToolModel* toolModel, const QString& title, unsigned int width, unsigned int height);
+  void newImageTab(const QString& title, unsigned int width, unsigned int height);
   void closeCurrentImageTab();
   void closeAllImageTabs();
 
   Image* getCurrentImage() const;
+  ImageModel* getCurrentImageModel() const;
+  ToolModel* getCurrentToolModel() const;
 };

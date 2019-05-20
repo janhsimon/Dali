@@ -1,42 +1,36 @@
 #include "ToolBar.hpp"
 
-ToolBar::ToolBar(ToolModel* toolModel, QWidget* parent) :
+ToolBar::ToolBar(const TabArea* tabArea, QWidget* parent) :
   QWidget(parent),
-  toolModel(toolModel)
+  tabArea(tabArea)
 {
-  setObjectName("SideBar");
+  setObjectName("SideBar"); // TODO: change
 
-  const auto rootLayout = new QVBoxLayout();
+  const auto layout = new QVBoxLayout();
+  setLayout(layout);
+
   const auto buttonGroup = new QButtonGroup(this);
 
-  colorPickerButton = std::make_unique<ToolButton>("Color Picker", QIcon(":/Icons/ColorPicker.svg"), Qt::Key_Q, buttonGroup, this);
-  rootLayout->addWidget(colorPickerButton.get());
+  colorPickerButton = new ToolButton("Color Picker", QIcon(":/Icons/ColorPicker.svg"), Qt::Key_Q, buttonGroup, this);
+  brushButton = new ToolButton("Brush", QIcon(":/Icons/Brush.svg"), Qt::Key_W, buttonGroup, this, true);
+  lineButton = new ToolButton("Line", QIcon(":/Icons/Line.svg"), Qt::Key_E, buttonGroup, this);
+  squareButton = new ToolButton("Square", QIcon(":/Icons/Square.svg"), Qt::Key_A, buttonGroup, this);
+  circleButton = new ToolButton("Circle", QIcon(":/Icons/Circle.svg"), Qt::Key_S, buttonGroup, this);
+  fillButton = new ToolButton("Fill", QIcon(":/Icons/Fill.svg"), Qt::Key_D, buttonGroup, this);
 
-  brushButton = std::make_unique<ToolButton>("Brush", QIcon(":/Icons/Brush.svg"), Qt::Key_W, buttonGroup, this, true);
-  rootLayout->addWidget(brushButton.get());
+  layout->addWidget(colorPickerButton);
+  layout->addWidget(brushButton);
+  layout->addWidget(lineButton);
+  layout->addWidget(squareButton);
+  layout->addWidget(circleButton);
+  layout->addWidget(fillButton);
+  layout->addStretch();
+  layout->addWidget(new ToolButton("Settings", QIcon(":/Icons/Settings.svg"), Qt::Key_F, this));
 
-  lineButton = std::make_unique<ToolButton>("Line", QIcon(":/Icons/Line.svg"), Qt::Key_E, buttonGroup, this);
-  rootLayout->addWidget(lineButton.get());
-
-  squareButton = std::make_unique<ToolButton>("Square", QIcon(":/Icons/Square.svg"), Qt::Key_A, buttonGroup, this);
-  rootLayout->addWidget(squareButton.get());
-
-  circleButton = std::make_unique<ToolButton>("Circle", QIcon(":/Icons/Circle.svg"), Qt::Key_S, buttonGroup, this);
-  rootLayout->addWidget(circleButton.get());
-
-  fillButton = std::make_unique<ToolButton>("Fill", QIcon(":/Icons/Fill.svg"), Qt::Key_D, buttonGroup, this);
-  rootLayout->addWidget(fillButton.get());
-
-  rootLayout->addStretch();
-
-  rootLayout->addWidget(new ToolButton("Settings", QIcon(":/Icons/Settings.svg"), Qt::Key_F, this));
-
-  setLayout(rootLayout);
-
-  connect(colorPickerButton.get(), &QPushButton::clicked, this, [&]() { this->toolModel->setSelectedTool(Tool::COLOR_PICKER); });
-  connect(brushButton.get(), &QPushButton::clicked, this, [&]() { this->toolModel->setSelectedTool(Tool::BRUSH); });
-  connect(lineButton.get(), &QPushButton::clicked, this, [&]() { this->toolModel->setSelectedTool(Tool::LINE); });
-  connect(squareButton.get(), &QPushButton::clicked, this, [&]() { this->toolModel->setSelectedTool(Tool::SQUARE); });
-  connect(circleButton.get(), &QPushButton::clicked, this, [&]() { this->toolModel->setSelectedTool(Tool::CIRCLE); });
-  connect(fillButton.get(), &QPushButton::clicked, this, [&]() { this->toolModel->setSelectedTool(Tool::FILL); });
+  connect(colorPickerButton, &QPushButton::clicked, this, [&]() { if (const auto currentToolModel = this->tabArea->getCurrentToolModel(); currentToolModel) currentToolModel->setSelectedTool(Tool::COLOR_PICKER); });
+  connect(brushButton, &QPushButton::clicked, this, [&]() { if (const auto currentToolModel = this->tabArea->getCurrentToolModel(); currentToolModel) currentToolModel->setSelectedTool(Tool::BRUSH); });
+  connect(lineButton, &QPushButton::clicked, this, [&]() { if (const auto currentToolModel = this->tabArea->getCurrentToolModel(); currentToolModel) currentToolModel->setSelectedTool(Tool::LINE); });
+  connect(squareButton, &QPushButton::clicked, this, [&]() { if (const auto currentToolModel = this->tabArea->getCurrentToolModel(); currentToolModel) currentToolModel->setSelectedTool(Tool::SQUARE); });
+  connect(circleButton, &QPushButton::clicked, this, [&]() { if (const auto currentToolModel = this->tabArea->getCurrentToolModel(); currentToolModel) currentToolModel->setSelectedTool(Tool::CIRCLE); });
+  connect(fillButton, &QPushButton::clicked, this, [&]() { if (const auto currentToolModel = this->tabArea->getCurrentToolModel(); currentToolModel) currentToolModel->setSelectedTool(Tool::FILL); });
 }

@@ -2,16 +2,23 @@
 
 #include "ToolButton.hpp"
 #include "../TabArea/TabArea.hpp"
-#include "../Models/ToolModel.hpp"
 
 class ToolBar : public QWidget
 {
   Q_OBJECT
 
 public:
-  ToolBar(ToolModel* toolModel, QWidget* parent = nullptr);
+  ToolBar(const TabArea* tabArea, QWidget* parent = nullptr);
 
 private:
-  ToolModel* toolModel;
-  std::unique_ptr<ToolButton> colorPickerButton, brushButton, lineButton, squareButton, circleButton, fillButton;
+  // non-owning
+  const TabArea* tabArea;
+
+  // memory managed by Qt
+  ToolButton* colorPickerButton;
+  ToolButton* brushButton;
+  ToolButton* lineButton;
+  ToolButton* squareButton;
+  ToolButton* circleButton;
+  ToolButton* fillButton;
 };

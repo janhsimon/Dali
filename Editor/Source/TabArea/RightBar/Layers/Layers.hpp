@@ -10,8 +10,11 @@ public:
   Layers(ImageModel* imageModel, QWidget* parent = nullptr);
 
 private:
+  // non-owning
   ImageModel* imageModel;
-  std::unique_ptr<LayerList> layerList;
+
+  // memory managed by Qt
+  LayerList* layerList;
   QPushButton* addLayerButton;
   QPushButton* removeLayerButton;
 };

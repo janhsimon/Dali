@@ -43,6 +43,7 @@ signals:
   void imageChanged(const QRect& imageRect);
 
 private:
+  // non-owning
   const ToolModel* toolModel;
 
   QVector<QRgb> paletteColors;

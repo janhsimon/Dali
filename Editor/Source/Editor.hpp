@@ -2,7 +2,6 @@
 
 #include "MenuBar.hpp"
 #include "ToolBar/ToolBar.hpp"
-#include "ToolSettingsBar/ToolSettingsBar.hpp"
 
 class Editor : public QMainWindow
 {
@@ -12,8 +11,11 @@ public:
   Editor(QWidget* parent = nullptr);
 
 private:
-  std::unique_ptr<MenuBar> menuBar;
-  std::unique_ptr<ToolSettingsBar> toolSettingsBar;
-  std::unique_ptr<ToolBar> toolBar;
-  std::unique_ptr<TabArea> tabArea;
+  static constexpr auto MIN_WIDTH = 1024;
+  static constexpr auto MIN_HEIGHT = 768;
+
+  // memory managed by Qt
+  MenuBar* menuBar;
+  ToolBar* toolBar;
+  TabArea* tabArea;
 };

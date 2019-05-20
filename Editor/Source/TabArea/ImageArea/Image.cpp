@@ -1,15 +1,14 @@
 #include "Image.hpp"
 
-Image::Image(const ToolModel* toolModel, unsigned int width, unsigned int height, QWidget* parent) :
+Image::Image(ImageModel* imageModel, const ToolModel* toolModel, unsigned int width, unsigned int height, QWidget* parent) :
   QWidget(parent),
+  imageModel(imageModel),
   toolModel(toolModel),
   drawGrid(false),
   mousePosition(-1, -1),
   isLeftMouseButtonDown(false),
   rectToOverwrite(0, 0, 0, 0)
 {
-  imageModel = std::make_unique<ImageModel>(toolModel, width, height);
-
   setScale(4);
 
   // receive mouse move events even when no mouse buttons are pressed
@@ -17,8 +16,8 @@ Image::Image(const ToolModel* toolModel, unsigned int width, unsigned int height
   
   setCursor(Qt::CrossCursor);
 
-  connect(imageModel.get(), &ImageModel::paletteChanged, this, [&]() { repaint(); });
-  connect(imageModel.get(), &ImageModel::layersChanged, this, [&]() { repaint(); });
+  connect(imageModel, &ImageModel::paletteChanged, this, [&]() { repaint(); });
+  connect(imageModel, &ImageModel::layersChanged, this, [&]() { repaint(); });
 
   // it is possible to connect to the image changed signal of the image model
   // here to redraw but calling repaint directly gives better performance

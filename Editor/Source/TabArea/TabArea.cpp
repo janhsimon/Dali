@@ -5,9 +5,9 @@ TabArea::TabArea(QWidget* parent) :
 {
 }
 
-void TabArea::newImageTab(const ToolModel* toolModel, const QString& title, unsigned int width, unsigned int height)
+void TabArea::newImageTab(const QString& title, unsigned int width, unsigned int height)
 {
-  setCurrentIndex(addTab(new Tab(toolModel, width, height, this), title));
+  setCurrentIndex(addTab(new Tab(width, height, this), title));
 }
 
 void TabArea::closeCurrentImageTab()
@@ -36,6 +36,26 @@ Image* TabArea::getCurrentImage() const
   {
     return static_cast<Tab*>(currentTab)->getImage();
   }
-  
+
+  return nullptr;
+}
+
+ImageModel* TabArea::getCurrentImageModel() const
+{
+  if (const auto currentTab = currentWidget(); currentTab)
+  {
+    return static_cast<Tab*>(currentTab)->getImageModel();
+  }
+
+  return nullptr;
+}
+
+ToolModel* TabArea::getCurrentToolModel() const
+{
+  if (const auto currentTab = currentWidget(); currentTab)
+  {
+    return static_cast<Tab*>(currentTab)->getToolModel();
+  }
+
   return nullptr;
 }
