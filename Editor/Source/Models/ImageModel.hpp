@@ -34,7 +34,10 @@ public:
 
   int getWidth() const { return width; }
   int getHeight() const { return height; }
-  void drawOnSelectedLayer(const QPoint& point);
+  void setPixel(const unsigned int layerIndex, const int x, const int y, const unsigned int paletteColorIndex); // emit imageChanged when done changing pixels
+
+  QRect getDirtyRect() const { return dirtyRect; }
+  void setDirtyRect(const QRect& dirtyRect) { this->dirtyRect = dirtyRect; }
 
 signals: 
   void paletteChanged();
@@ -53,4 +56,6 @@ private:
   unsigned int selectedLayerIndex; // not including internal first palette color
 
   int width, height;
+
+  QRect dirtyRect;
 };

@@ -134,39 +134,17 @@ void ImageModel::setLayerVisible(const unsigned layerIndex, const bool visible)
   emit layersChanged();
 }
 
-void ImageModel::drawOnSelectedLayer(const QPoint& point)
+void ImageModel::setPixel(const unsigned int layerIndex, const int x, const int y, const unsigned int paletteColorIndex)
 {
-  assert(selectedLayerIndex < layers.size());
-  if (!layers[selectedLayerIndex]->visible)
-  {
-    return;
-  }
+  assert(x >= 0 && x < width);
+  assert(y >= 0 && y < height);
 
-  const auto brushModel = toolModel->getBrushModel();
+  // take the internal first palette color into account
+  const auto adjustedPaletteColorIndex = paletteColorIndex + 1u;
+  assert(adjustedPaletteColorIndex < static_cast<unsigned int>(paletteColors.size()));
 
-  for (auto y = 0; y < brushModel->getHeight(); ++y)
-  {
-    for (auto x = 0; x < brushModel->getWidth(); ++x)
-    {
-      if (!brushModel->getBrushAt(x, y))
-      {
-        continue;
-      }
+  getLayerImage(layerIndex)->scanLine(y)[x] = adjustedPaletteColorIndex;
 
-      const auto i = point.x() + x;
-      const auto j = point.y() + y;
-
-      if (i >= 0 && i < width && j >= 0 && j < height)
-      {
-        // take the internal first palette color into account
-        const auto adjustedPaletteColorIndex = getSelectedPaletteColorIndex() + 1u;
-        assert(adjustedPaletteColorIndex < static_cast<unsigned int>(paletteColors.size()));
-
-        layers[selectedLayerIndex]->image->scanLine(j)[i] = adjustedPaletteColorIndex;
-      }
-    }
-  }
-
-  const auto imageRect = QRect(point.x(), point.y(), brushModel->getWidth(), brushModel->getHeight());
-  emit imageChanged(imageRect);
+  // do not emit the imageChanged signal here for performance reasons when multiple pixels need to change
+  // instead the caller of this function is required to emit it after all their pixel changes are done
 }

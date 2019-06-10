@@ -2,6 +2,7 @@
 
 #include "../../Models/ImageModel.hpp"
 #include "../../Models/ToolModel.hpp"
+#include "../../Tools/BrushTool.hpp"
 
 class Image : public QWidget
 {
@@ -28,6 +29,9 @@ private:
   static constexpr auto BACKGROUND_COLOR_BRIGHT = qRgb(100, 100, 100);
   static constexpr auto BACKGROUND_COLOR_DARK = qRgb(88, 88, 88);
 
+  // owning
+  std::unique_ptr<BrushTool> brushTool;
+
   // non-owning
   ImageModel* imageModel;
   const ToolModel* toolModel;
@@ -37,10 +41,8 @@ private:
   bool drawGrid;
   QPoint mousePosition; // in image space
   bool isLeftMouseButtonDown;
-  QRect rectToOverwrite; // in screen space
 
-  void update();
-  void updateBrush();
+  bool updateDirtyRect();
 
   void setScale(unsigned int scale);
 

@@ -6,9 +6,10 @@ Image::Image(ImageModel* imageModel, const ToolModel* toolModel, unsigned int wi
   toolModel(toolModel),
   drawGrid(false),
   mousePosition(-1, -1),
-  isLeftMouseButtonDown(false),
-  rectToOverwrite(0, 0, 0, 0)
+  isLeftMouseButtonDown(false)
 {
+  brushTool = std::make_unique<BrushTool>(imageModel, toolModel->getBrushModel());
+
   setScale(4);
 
   // receive mouse move events even when no mouse buttons are pressed
@@ -25,7 +26,33 @@ Image::Image(ImageModel* imageModel, const ToolModel* toolModel, unsigned int wi
 
 void Image::mousePressEvent(QMouseEvent *event)
 {
-  mouseMoveEvent(event);
+  // retrieve the mouse position in image space
+  mousePosition = screenToImagePoint(event->localPos());
+  isLeftMouseButtonDown = event->buttons() & Qt::LeftButton;
+  
+  if (!imageModel->getLayerVisible(imageModel->getSelectedLayerIndex()))
+  // do not allow tools when the selected layer is invisible
+  {
+    return;
+  }
+
+  if (toolModel->getSelectedTool() == Tool::BRUSH)
+  {
+    if (!updateDirtyRect())
+    {
+      return;
+    }
+
+    const auto imageRect = brushTool->mousePress(mousePosition, isLeftMouseButtonDown);
+    const auto screenRect = QRect(imageRect.x() * scale, imageRect.y() * scale, imageRect.width() * scale, imageRect.height() * scale);
+    repaint(screenRect);
+
+    imageModel->setDirtyRect(screenRect);
+  }
+  else if (toolModel->getSelectedTool() == Tool::LINE)
+  {
+    // TODO
+  }
 }
 
 void Image::mouseMoveEvent(QMouseEvent* event)
@@ -33,14 +60,37 @@ void Image::mouseMoveEvent(QMouseEvent* event)
   // retrieve the mouse position in image space
   mousePosition = screenToImagePoint(event->localPos());
   isLeftMouseButtonDown = event->buttons() & Qt::LeftButton;
-  update();
+  
+  if (!imageModel->getLayerVisible(imageModel->getSelectedLayerIndex()))
+  // do not allow tools when the selected layer is invisible
+  {
+    return;
+  }
+
+  if (toolModel->getSelectedTool() == Tool::BRUSH)
+  {
+    if (!updateDirtyRect())
+    {
+      return;
+    }
+
+    const auto imageRect = brushTool->mouseMove(mousePosition, isLeftMouseButtonDown);
+    const auto screenRect = QRect(imageRect.x() * scale, imageRect.y() * scale, imageRect.width() * scale, imageRect.height() * scale);
+    repaint(screenRect);
+
+    imageModel->setDirtyRect(screenRect);
+  }
+  else if (toolModel->getSelectedTool() == Tool::LINE)
+  {
+    // TODO
+  }
 }
 
 void Image::leaveEvent(QEvent* event)
 {
   mousePosition.setX(-1);
   mousePosition.setY(-1);
-  update();
+  updateDirtyRect();
 }
 
 void Image::paintEvent(QPaintEvent* event)
@@ -124,38 +174,21 @@ void Image::paintEvent(QPaintEvent* event)
   }
 }
 
-void Image::update()
+bool Image::updateDirtyRect()
 {
-  if (toolModel->getSelectedTool() == Tool::BRUSH)
+  const auto dirtyRect = imageModel->getDirtyRect();
+  if (!dirtyRect.isNull())
   {
-    updateBrush();
-  }
-}
-
-void Image::updateBrush()
-{
-  if (!rectToOverwrite.isNull())
-  {
-    repaint(rectToOverwrite);
+    repaint(dirtyRect);
   }
 
   if (!doesImageContainPoint(mousePosition))
   {
-    rectToOverwrite.setWidth(0);
-    rectToOverwrite.setHeight(0);
-    return;
+    imageModel->setDirtyRect(QRect());
+    return false;
   }
 
-  if (isLeftMouseButtonDown)
-  {
-    imageModel->drawOnSelectedLayer(mousePosition);
-  }
-
-  const auto brushModel = toolModel->getBrushModel();
-  const auto screenRect = QRect(mousePosition.x() * scale, mousePosition.y() * scale, brushModel->getWidth() * scale, brushModel->getHeight() * scale);
-  repaint(screenRect);
-
-  rectToOverwrite = screenRect;
+  return true;
 }
 
 void Image::setScale(unsigned int scale)
